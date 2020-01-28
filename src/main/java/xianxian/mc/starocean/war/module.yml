@@ -1,0 +1,42 @@
+scoreboard:
+  title: "&6|&4星海之战&6|"
+  lines:
+    - "&f&2"
+    - "&6&m                           &6&r"
+    - "&7&l第${wave}波，共${wave_total}波"
+    - "&f&3"
+    - "&6${mobs}"
+    - "&f&4"
+    - "&6&m                           &6"
+    - "&f"
+wars:
+  example:
+    player-limit: 4
+    positions:
+      pos1: 
+        ==: org.bukkit.Location
+        world: bf_1
+        x: 0.0
+        y: 1.0
+        z: 0.0
+        pitch: 0.0
+        yaw: 0.0
+    base: 
+      ==: org.bukkit.Location
+      world: bf_1
+      x: 10.0
+      y: 1.0
+      z: 10.0
+      pitch: 0.0
+      yaw: 0.0
+    base-mob: Base
+    waves:
+      first:
+        wave: 1
+        script:
+          # START WAIT seconds: wait (seconds) before the wave start
+          - "START WAIT 20"
+          # SUMMON mob count position: summon (count) mobs at position, summon one mob per 2 ticks
+          - "SUMMON SomeMobs1 20 pos1"
+          - "SUMMON SomeMobs2 20 pos2"
+          - "SUMMON SomeMobs3 20 pos3"

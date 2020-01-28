@@ -1,0 +1,17 @@
+main: xianxian.mc.starocean.StarOcean
+name: StarOcean
+version: '0.1'
+softdepend:
+- NBTAPI
+- CMI
+- LuckPerms
+- ProtocolSupport
+- PlaceholderAPI
+- AdvancedAchievements
+- WorldEdit
+- WorldGuard
+- MythicMobs
+commands: {}
+permissions: {}
+api-version: '1.15'
+author: Lovely_xianxian
