@@ -56,7 +56,6 @@ public class Dustbin extends Module implements Listener {
     @Override
     public void prepare() {
         CommandDustbin dustbin = new CommandDustbin(this);
-        dustbin.registerDefaultPermission();
         plugin.getCommandManager().registerCommand(dustbin);
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }

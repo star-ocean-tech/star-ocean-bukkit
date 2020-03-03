@@ -125,9 +125,9 @@ public class StarOceanRobot extends Module implements Listener {
     @Override
     public void prepare() {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
-        CommandRobot staroceanrobot = new CommandRobot(this);
-        staroceanrobot.registerDefaultPermission();
-        plugin.getCommandManager().registerCommand(staroceanrobot);
+        //CommandRobot staroceanrobot = new CommandRobot(this);
+        //staroceanrobot.registerDefaultPermission();
+        //plugin.getCommandManager().registerCommand(staroceanrobot);
     }
 
     @Override

@@ -57,7 +57,7 @@ public class ScheduleRestart extends Module implements Listener {
         this.getPlugin().getServer().getPluginManager().registerEvents(this, getPlugin());
 
         CommandScheduleRestart schedulerestart = new CommandScheduleRestart(this);
-        schedulerestart.registerDefaultPermission();
+        //schedulerestart.registerDefaultPermission();
         this.getPlugin().getCommandManager().registerCommand(schedulerestart);
     }
 

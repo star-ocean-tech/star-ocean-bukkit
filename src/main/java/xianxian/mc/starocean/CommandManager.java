@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
 
+@Deprecated
 public class CommandManager {
     private final AbstractPlugin plugin;
     private final Logger logger;
@@ -37,22 +38,21 @@ public class CommandManager {
     }
 
     public void registerCommand(ModuleCommand command) {
-        if (!prepared) {
-            logger.severe("CommandManager not prepared, Unable to register command "
-                    + command.getModule().getIdentifiedName() + ":" + command.getName());
-            return;
-        }
-        if (commandMap == null) {
-            logger.severe("CommandMap not found, Unable to register command " + command.getModule().getIdentifiedName()
-                    + ":" + command.getName());
-            return;
-        }
-
-        logger.info("Registering command " + command.getModule().getIdentifiedName() + ":" + command.getName());
-        if (!commandMap.register(command.getLabel(), command.getModule().getIdentifiedName(), command)
-                || !command.register(commandMap))
-            logger.severe("Unable to register module command " + command.getModule().getIdentifiedName() + ":"
-                    + command.getName());
+        /*
+         * if (!prepared) {
+         * logger.severe("CommandManager not prepared, Unable to register command " +
+         * command.getModule().getIdentifiedName() + ":" + command.getName()); return; }
+         * if (commandMap == null) {
+         * logger.severe("CommandMap not found, Unable to register command " +
+         * command.getModule().getIdentifiedName() + ":" + command.getName()); return; }
+         * 
+         * logger.info("Registering command " + command.getModule().getIdentifiedName()
+         * + ":" + command.getName()); if (!commandMap.register(command.getLabel(),
+         * command.getModule().getIdentifiedName(), command) ||
+         * !command.register(commandMap))
+         * logger.severe("Unable to register module command " +
+         * command.getModule().getIdentifiedName() + ":" + command.getName());
+         */
 
     }
 

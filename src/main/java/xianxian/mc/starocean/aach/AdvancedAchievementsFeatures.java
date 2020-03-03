@@ -3,6 +3,7 @@ package xianxian.mc.starocean.aach;
 import java.util.UUID;
 import java.util.function.Function;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,6 +19,7 @@ import xianxian.mc.starocean.AbstractPlugin;
 import xianxian.mc.starocean.Module;
 import xianxian.mc.starocean.Modules;
 import xianxian.mc.starocean.luckperms.LuckPermsFeatures;
+import xianxian.mc.starocean.vault.VaultFeatures;
 
 public class AdvancedAchievementsFeatures extends Module implements Listener {
     private int totalAchievements;
@@ -34,10 +36,10 @@ public class AdvancedAchievementsFeatures extends Module implements Listener {
         Player player = event.getPlayer();
         int achievements = getPlayerAdvancedAchievements.apply(player);
 
-        if (achievements >= totalAchievements) {
+        if (achievements >= totalAchievements && !player.hasPermission(permissionWillGive)) {
             getMessager().broadcastMessage(new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD
                     + ChatColor.ITALIC + ChatColor.UNDERLINE + "恭喜玩家" + player.getName() + "获得了全成就"));
-            addPermission(player.getUniqueId());
+            addPermission(player);
         }
     }
 
@@ -68,20 +70,14 @@ public class AdvancedAchievementsFeatures extends Module implements Listener {
 
     @Override
     public void prepare() {
-        Configuration config = getConfig();
-        config.options().copyDefaults(true);
-        config.addDefault("total-achievements", 49);
-        config.addDefault("permission-will-give", "group.全成就玩家");
-
-        this.totalAchievements = config.getInt("total-achievements");
-        this.permissionWillGive = config.getString("permission-will-give");
-
+        reload();
+        
         CommandAAchCheck aachcheck = new CommandAAchCheck(this);
-        aachcheck.registerDefaultPermission();
+        plugin.getCommandManager().getCommandContexts().registerContext(AdvancedAchievementsFeatures.class, (s)->this);
         plugin.getCommandManager().registerCommand(aachcheck);
+        
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
 
-        this.saveConfig();
     }
 
     @Override
@@ -92,18 +88,27 @@ public class AdvancedAchievementsFeatures extends Module implements Listener {
 
     @Override
     public void reload() {
-        // TODO 自动生成的方法存根
+        Configuration config = getConfig();
+        
+        config.options().copyDefaults(true);
+        config.addDefault("total-achievements", 49);
+        config.addDefault("permission-will-give", "group.全成就玩家");
+        
+        this.saveConfig();
+        
+        this.totalAchievements = config.getInt("total-achievements");
+        this.permissionWillGive = config.getString("permission-will-give");
 
     }
 
-    /* package */ void addPermission(UUID player) {
-        if (plugin.getModuleManager().isModuleLoaded(Modules.LUCK_PERMS_FEATURES.className())) {
-            LuckPermsFeatures lp = plugin.getModuleManager()
-                    .<LuckPermsFeatures>getLoadedModule(LuckPermsFeatures.class);
-            if (lp == null) {
-                logger().severe("Unable to find LuckPerms, can't set permissions");
+    /* package */ void addPermission(OfflinePlayer player) {
+        if (plugin.getModuleManager().isModuleLoaded(VaultFeatures.class)) {
+            VaultFeatures vault = plugin.getModuleManager()
+                    .<VaultFeatures>getLoadedModule(VaultFeatures.class);
+            if (vault == null) {
+                logger().severe("Unable to find Vault, can't set permissions");
             } else {
-                boolean success = lp.setPermissionFunction().apply(player, permissionWillGive);
+                boolean success = vault.getVaultPermission().playerAdd(null, player, permissionWillGive);
                 if (success) {
                     logger().info("Successfully set permission for player" + player.toString());
                 } else {
@@ -111,7 +116,7 @@ public class AdvancedAchievementsFeatures extends Module implements Listener {
                 }
             }
         } else {
-            logger().severe("Unable to find LuckPerms, can't set permissions");
+            logger().severe("Unable to find Vault, can't set permissions");
         }
     }
 

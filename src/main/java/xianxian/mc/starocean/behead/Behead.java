@@ -8,6 +8,7 @@ import java.util.Random;
 
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Cow;
@@ -84,7 +85,6 @@ public class Behead extends Module implements Listener {
         this.runnable.runTaskTimer(getPlugin(), 50, 50);
         
         CommandBehead behead = new CommandBehead(this);
-        behead.registerDefaultPermission();
         this.getPlugin().getCommandManager().registerCommand(behead);
     }
 
@@ -99,6 +99,10 @@ public class Behead extends Module implements Listener {
             return;
         Entity entity = event.getEntity();
         if (isBeheadable(entity)) {
+            setBeheadable(entity, false);
+            EntityDamageEvent cause = entity.getLastDamageCause();
+            if (cause == null || !(cause instanceof EntityDamageByEntityEvent))
+                return;
             ItemStack item = MobHeads.toItemStack(entity);
             if (item == null)
                 return;
@@ -106,7 +110,6 @@ public class Behead extends Module implements Listener {
             if (entity instanceof Player) {
                 Player player = (Player) entity; 
                 setPlayerBeheaded(player, true);
-                setBeheadable(player, false);
                 setPlayerBeheadedDebuffTicks(player, playerBeheadedDebuffTicks);
                 getMessager().sendMessageTo(entity, ChatColor.DARK_RED.toString() + ChatColor.BOLD + "你被斩下了头颅，受到半小时的惩罚，捡回头颅恢复");
             }
@@ -115,6 +118,8 @@ public class Behead extends Module implements Listener {
     
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        if (event.isCancelled())
+            return;
         if (event.getDamager() instanceof Player) {
             Player damager = (Player) event.getDamager();
             ItemStack stack = damager.getInventory().getItemInMainHand();
@@ -166,7 +171,8 @@ public class Behead extends Module implements Listener {
                 ItemMeta itemMeta = stack.getItemMeta();
                 if (itemMeta instanceof SkullMeta) {
                     SkullMeta meta = (SkullMeta) itemMeta;
-                    if (meta.getOwningPlayer().getUniqueId().equals(player.getUniqueId())) {
+                    OfflinePlayer owningPlayer = meta.getOwningPlayer();
+                    if (owningPlayer != null && owningPlayer.getUniqueId().equals(player.getUniqueId())) {
                         if (!isPlayerBeheaded(player))
                             return;
                         setPlayerBeheaded(player, false);

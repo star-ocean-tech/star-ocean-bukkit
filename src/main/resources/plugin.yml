@@ -11,6 +11,8 @@ softdepend:
 - WorldEdit
 - WorldGuard
 - MythicMobs
+- Vault
+- UltimateChat
 commands: {}
 permissions: {}
 api-version: '1.15'

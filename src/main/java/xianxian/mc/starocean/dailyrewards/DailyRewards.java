@@ -73,22 +73,6 @@ public class DailyRewards extends Module implements Listener {
     }
 
     @EventHandler
-    public void onInventoryClose(InventoryCloseEvent event) {
-        DailyRewardsGUI gui = guis.remove(event.getPlayer());
-        if (gui != null)
-            gui.close();
-    }
-
-    @EventHandler
-    public void onInventoryClick(InventoryClickEvent event) {
-        if (guis.containsKey(event.getWhoClicked())) {
-            event.setCancelled(true);
-            DailyRewardsGUI gui = guis.get(event.getWhoClicked());
-            gui.click(event.getSlot());
-        }
-    }
-
-    @EventHandler
     public void onDatabaseConnected(DatabaseConnectedEvent event) {
         if (connection != null) {
             closeStatements(getPlayer, setPlayer, updatePlayer);
@@ -211,8 +195,10 @@ public class DailyRewards extends Module implements Listener {
     public void showGUI(Player player) {
         DailyRewardsPlayer playerInfo = getPlayer(player.getUniqueId().toString());
         DailyRewardsGUI gui = new DailyRewardsGUI(this, player, playerInfo);
-        guis.put(player, gui);
-        gui.show();
+        getPlugin().getGUIManager().open(gui);
+        
+        //guis.put(player, gui);
+        //gui.show();
     }
 
     public Reward getReward(int day) {
@@ -262,7 +248,6 @@ public class DailyRewards extends Module implements Listener {
     @Override
     public void prepare() {
         CommandDailyRewards dailyrewards = new CommandDailyRewards(this);
-        dailyrewards.registerDefaultPermission();
         getPlugin().getCommandManager().registerCommand(dailyrewards);
 
         getPlugin().getServer().getPluginManager().registerEvents(this, getPlugin());

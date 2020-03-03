@@ -103,8 +103,7 @@ public class UpgradingTools extends Module implements Listener {
                 ItemStack tool = player.getInventory().getItemInMainHand();
                 Material type = tool.getType();
                 if (ToolType.SWORD.contains(type) || ToolType.CROSSBOW.contains(type) || ToolType.BOW.contains(type))
-                    ;
-                increaseExp(player, tool, 1);
+                    increaseExp(player, tool, 1);
             }
         }
     }
@@ -174,7 +173,6 @@ public class UpgradingTools extends Module implements Listener {
     public void prepare() {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         CommandUpgrade upgrade = new CommandUpgrade(this);
-        upgrade.registerDefaultPermission();
         plugin.getCommandManager().registerCommand(upgrade);
         upgradings = new UpgradingTypes(this);
         upgradings.load();

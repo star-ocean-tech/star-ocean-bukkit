@@ -11,8 +11,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -65,7 +67,11 @@ public class SelectionListener implements Listener {
             }
         }
     }
-
+    
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        event.getPlayer().setMetadata("selection-context", new FixedMetadataValue(module.getPlugin(), new PlayerContext(event.getPlayer().getUniqueId())));
+    }
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         contexts.remove(event.getPlayer().getUniqueId());

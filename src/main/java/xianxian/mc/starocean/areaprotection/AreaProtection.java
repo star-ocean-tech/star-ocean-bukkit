@@ -36,13 +36,20 @@ public class AreaProtection extends Module {
         plugin.getServer().getPluginManager().registerEvents(selectionListener, plugin);
 
         CommandArea area = new CommandArea(this);
-        area.registerDefaultPermission();
         plugin.getCommandManager().registerCommand(area);
     }
 
     @Override
     public void disable() {
 
+    }
+
+    public List<Area> getLoadedAreas() {
+        return loadedAreas;
+    }
+
+    public List<Area> getEnabledAreas() {
+        return enabledAreas;
     }
 
     public Area getEnabledAreaByName(String name) {
@@ -71,6 +78,7 @@ public class AreaProtection extends Module {
     }
 
     public void removeArea(Area area) {
+        this.enabledAreas.remove(area);
         this.loadedAreas.remove(area);
         save();
     }
@@ -168,7 +176,9 @@ public class AreaProtection extends Module {
         areaConfig.set("available-areas", availableAreas);
         areaConfig.set("enabled-areas", enabledAreaNames);
 
-        saveConfig(areaConfig, "areas.yml");
+        getPlugin().newTaskChain()
+            .async(()->saveConfig(areaConfig, "areas.yml"))
+            .execute();
     }
 
     public Area getByPosition(Location location) {

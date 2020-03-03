@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -25,6 +26,9 @@ import com.google.common.collect.Lists;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import co.aikar.commands.BukkitCommandManager;
+import co.aikar.taskchain.BukkitTaskChainFactory;
+import co.aikar.taskchain.TaskChainFactory;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -40,9 +44,11 @@ public class StarOcean extends AbstractPlugin {
 
     private ModuleManager moduleManager = new ModuleManager(this);
     private PermissionManager permissionManager = new PermissionManager(this);
-    private CommandManager commandManager = new CommandManager(this);
+    private BukkitCommandManager commandManager;
     private DatabaseManager databaseManager = new DatabaseManager(this);
     private ServerVersionMatcher versionMatcher = new BukkitVersionMatcher();
+    private GUIManager guiManager = new GUIManager(this);
+    private TaskChainFactory taskChainFactory;
     
     private File messagerFile;
     private FileConfiguration messagerConfig;
@@ -56,8 +62,13 @@ public class StarOcean extends AbstractPlugin {
     @Override
     public void onEnable() {
         super.onEnable();
+        this.taskChainFactory = BukkitTaskChainFactory.create(this);
+        commandManager = new BukkitCommandManager(this);
+        commandManager.enableUnstableAPI("help");
         INSTANCE = this;
-
+        
+        guiManager.prepare();
+        
         if (!this.getDataFolder().exists())
             this.getDataFolder().mkdirs();
 
@@ -81,8 +92,6 @@ public class StarOcean extends AbstractPlugin {
         StarOceanModule staroceanModule = new StarOceanModule(this);
         this.moduleManager.addModule("xianxian.mc.starocean.StarOcean$StarOceanModule", staroceanModule);
         staroceanModule.setMessager(new DefaultMessager(this, staroceanModule));
-        
-        getCommandManager().prepare();
 
         moduleManager.prepare();
 
@@ -210,7 +219,7 @@ public class StarOcean extends AbstractPlugin {
     }
 
     @Override
-    public CommandManager getCommandManager() {
+    public BukkitCommandManager getCommandManager() {
         return commandManager;
     }
 
@@ -246,7 +255,6 @@ public class StarOcean extends AbstractPlugin {
             this.getPlugin().getServer().getPluginManager().registerEvents(this, getPlugin());
             this.getPlugin().getPermissionManager().registerPermission("starocean.listmodules", null);
             CommandStarOcean starocean = new CommandStarOcean(this);
-            starocean.registerDefaultPermission();
             this.getPlugin().getCommandManager().registerCommand(starocean);
         }
 
@@ -279,7 +287,7 @@ public class StarOcean extends AbstractPlugin {
                 prefix = plugin.messagerConfig.getString(module.getModuleName().toLowerCase());
             } else {
                 prefix = ChatColor.DARK_GRAY + "|" + ChatColor.BLUE + ChatColor.BOLD + "小星" + ChatColor.DARK_GRAY
-                        + "| >> ";
+                        + "| >> " + ChatColor.RESET;
                 plugin.messagerConfig.set(this.module.getModuleName().toLowerCase(), prefix);
             }
 
@@ -295,5 +303,15 @@ public class StarOcean extends AbstractPlugin {
     @Override
     public ServerVersionMatcher getVersionMatcher() {
         return versionMatcher;
+    }
+
+    @Override
+    public GUIManager getGUIManager() {
+        return guiManager;
+    }
+
+    @Override
+    public TaskChainFactory getTaskChainFactory() {
+        return taskChainFactory;
     }
 }

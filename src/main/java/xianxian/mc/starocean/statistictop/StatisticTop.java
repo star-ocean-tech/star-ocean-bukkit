@@ -32,6 +32,7 @@ public class StatisticTop extends Module implements Listener {
     
     private Map<Player, StatisticTopScreen> statisticTopScreens = new HashMap<>();
     private List<PlayerData> statisticTop;
+    private List<PlayerData> playersToDisplay;
     
     private String title;
     private Statistic statistic;
@@ -45,6 +46,7 @@ public class StatisticTop extends Module implements Listener {
     public StatisticTop(AbstractPlugin plugin) {
         super(plugin);
         this.statisticTop = new ArrayList<PlayerData>();
+        this.playersToDisplay = new ArrayList<PlayerData>();
     }
 
     @Override
@@ -97,7 +99,6 @@ public class StatisticTop extends Module implements Listener {
         this.getPlugin().getServer().getPluginManager().registerEvents(this, this.getPlugin());
         
         CommandStatsTop statstop = new CommandStatsTop(this);
-        statstop.registerDefaultPermission();
         this.getPlugin().getCommandManager().registerCommand(statstop);
 
         BukkitRunnable runnable = new BukkitRunnable() {

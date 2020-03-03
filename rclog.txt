@@ -1,0 +1,5 @@
+[ERRR:20-2-24 上午10:55] Could not read contents of pom.xml from self-jar.
+[FINE:20-2-24 上午10:55] Update check complete: No updates available
+[INFO:20-2-24 上午10:55] CLI Skipped packages: 0
+[INFO:20-2-24 上午10:55] Loaded input from: 2.0.jar
+[INFO:20-2-24 上午10:56] CFR: Analysing type bp

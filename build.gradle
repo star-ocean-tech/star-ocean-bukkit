@@ -15,7 +15,8 @@ repositories {
     // Use jcenter for resolving your dependencies.
     // You can declare any Maven/Ivy/file repository here.
     mavenLocal()
-    //maven { url 'https://raw.github.com/StarOceanMC/Maven/repo'}
+    //maven { url 'https://raw.github.com/StarOceanMC/Maven/repo' }
+    //maven { url 'https://raw.github.com/FabioZumbi12/UltimateChat/mvn-repo' }
     maven { url 'http://maven.aliyun.com/repository/gradle-plugin' }
     maven { url 'http://maven.aliyun.com/repository/central' } //mavenCentral()
     maven { url 'http://maven.aliyun.com/repository/jcenter' } //jcenter()
@@ -25,6 +26,9 @@ repositories {
     maven { url 'http://repo.extendedclip.com/content/repositories/placeholderapi' }
     maven { url 'https://raw.github.com/PyvesB/AdvancedAchievements/mvn-repo/' }
     maven { url 'https://maven.enginehub.org/repo/' }
+    maven { url 'https://jitpack.io' }
+    maven { url 'https://repo.aikar.co/content/groups/aikar/' }
+    
 }
 
 dependencies {
@@ -41,11 +45,25 @@ dependencies {
     compileOnly group: 'me.clip', name: 'placeholderapi', version: '2.10.4'
     compileOnly group: 'com.hm.achievement', name: 'advanced-achievements-api', version: '1.2.0'
     //compileOnly group: 'com.sk89q.worldedit', name: 'worldedit-bukkit', version: '7.0.1-SNAPSHOT'
-    compileOnly group: 'com.sk89q.worldguard', name: 'worldguard-bukkit', version: '7.0.1'
+    compileOnly (group: 'com.sk89q.worldguard', name: 'worldguard-bukkit', version: '7.0.1') {
+        exclude group: 'org.bukkit'
+    }
     compileOnly fileTree('libs')
+    compileOnly (group: 'com.github.MilkBowl', name: 'VaultAPI', version: '1.7') {
+        exclude group: 'org.bukkit'
+    }
+    //compileOnly group: 'br.net.fabiozumbi12.UltimateChat', name: 'UltimateChat-Spigot', version: '1.8.9'
+    compile group: 'com.cedarsoft.serialization', name: 'jdom', version: '1.0.3'
+    compile group: 'commons-io', name: 'commons-io', version: '2.4'
+    compile group: 'commons-lang', name: 'commons-lang', version: '2.5'
+    compile group: 'commons-logging', name: 'commons-logging', version: '1.2'
+    compile group: 'commons-codec', name: 'commons-codec', version: '1.9'
     //compile group: 'com.electronwill.night-config', name: 'core', version: '3.6.2'
     //compile group: 'com.electronwill.night-config', name: 'toml', version: '3.6.2'
     compile fileTree('libs-n')
+    compile group: 'org.java-websocket', name: 'Java-WebSocket', version: '1.4.0'
+    compile group: 'co.aikar', name: 'taskchain-bukkit', version: '3.7.2'
+    compile group: 'co.aikar', name: 'acf-paper', version: '0.5.0-SNAPSHOT'
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -58,4 +76,13 @@ shadowJar {
 
     exclude 'META-INF/*.DSA'
     exclude 'META-INF/*.RSA'
+
+    relocate 'org.apache', 'xianxian.mc.libs.apache'
+    relocate 'com.zaxxer.hikari', 'xianxian.mc.libs.hikari'
+    relocate 'com.cedarsoft', 'xianxian.mc.libs.cedarsoft'
+    relocate 'com.mysql', 'xianxian.mc.libs.mysql'
+    relocate 'com.eastrobot.ask', 'xianxian.mc.libs.xiaoi.sdk'
+    relocate 'org.slf4j', 'xianxian.mc.libs.slf4j'
+    relocate 'org.java_websocket', 'xianxian.mc.libs.websocket'
+    relocate 'org.jdom', 'xianxian.mc.libs.jdom'
 }

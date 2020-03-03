@@ -30,6 +30,7 @@ import xianxian.mc.starocean.AbstractPlugin;
 import xianxian.mc.starocean.DatabaseConnectedEvent;
 import xianxian.mc.starocean.Module;
 
+@Deprecated
 public class RecordItemFrame extends Module implements Listener {
 
     private Connection connection;
@@ -212,7 +213,7 @@ public class RecordItemFrame extends Module implements Listener {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
 
         CommandRecordItemFrame recorditemframe = new CommandRecordItemFrame(this);
-        recorditemframe.registerDefaultPermission();
+        //recorditemframe.registerDefaultPermission();
         plugin.getCommandManager().registerCommand(recorditemframe);
     }
 

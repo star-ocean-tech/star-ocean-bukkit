@@ -8,20 +8,26 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.Default;
+import co.aikar.commands.annotation.Subcommand;
 import net.md_5.bungee.api.ChatColor;
 import xianxian.mc.starocean.ModuleCommand;
 import xianxian.mc.starocean.upgradingtools.UpgradingTools.ItemInfo;
 
+@CommandAlias("upgrade")
 public class CommandUpgrade extends ModuleCommand {
     private UpgradingTools module;
 
     protected CommandUpgrade(UpgradingTools module) {
-        super(module, "upgrade", "Open upgrading gui if available", "/<command>", Arrays.asList());
+        super(module);
         this.module = module;
+        this.module.getPlugin().getCommandManager().getCommandContexts().registerContext(UpgradingTools.class, (s)->module);
     }
 
-    @Override
-    public boolean onCommand(CommandSender sender, String commandLabel, String[] args) {
+    @Default
+    @Subcommand("gui")
+    public static boolean onCommand(CommandSender sender, UpgradingTools module, String commandLabel, String[] args) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
             ItemStack stack = player.getInventory().getItemInMainHand();
@@ -43,11 +49,5 @@ public class CommandUpgrade extends ModuleCommand {
             module.getMessager().sendMessageTo(sender, ChatColor.RED + "你只能在游戏里进行强化");
         }
         return true;
-    }
-
-    @Override
-    public List<String> tabComplete(CommandSender sender, String alias, String[] args, Location location)
-            throws IllegalArgumentException {
-        return Arrays.asList();
     }
 }

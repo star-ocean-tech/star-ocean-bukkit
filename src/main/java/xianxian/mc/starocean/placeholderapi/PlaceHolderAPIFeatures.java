@@ -30,7 +30,6 @@ public class PlaceHolderAPIFeatures extends Module {
     @Override
     public void prepare() {
         CommandDragontime dragontime = new CommandDragontime(this);
-        dragontime.registerDefaultPermission();
         plugin.getCommandManager().registerCommand(dragontime);
     }
 

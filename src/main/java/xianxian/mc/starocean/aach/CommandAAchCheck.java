@@ -11,20 +11,31 @@ import org.bukkit.command.CommandSender;
 import com.hm.achievement.api.AdvancedAchievementsAPI;
 import com.hm.achievement.api.AdvancedAchievementsAPIFetcher;
 
+import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.CommandPermission;
+import co.aikar.commands.annotation.Default;
+import co.aikar.commands.annotation.Description;
+import co.aikar.commands.annotation.Subcommand;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import xianxian.mc.starocean.ModuleCommand;
 
+@CommandAlias("aachcheck")
 public class CommandAAchCheck extends ModuleCommand {
     private AdvancedAchievementsFeatures module;
 
     protected CommandAAchCheck(AdvancedAchievementsFeatures module) {
-        super(module, "aachcheck", "Checks players achievements and give permissions", "/<command>", Arrays.asList());
+        //super(module, "aachcheck", "", "/<command>", Arrays.asList());
+        super(module);
         this.module = module;
+        module.getPlugin().getCommandManager().getCommandContexts().registerContext(AdvancedAchievementsFeatures.class, (s)->module);
     }
 
-    @Override
-    public boolean onCommand(CommandSender sender, String commandLabel, String[] args) {
+    @Default
+    @Subcommand("check")
+    @Description("Checks players achievements and give permissions")
+    @CommandPermission("starocean.commands.aachcheck")
+    public static void check(CommandSender sender, AdvancedAchievementsFeatures module) {
         Optional<AdvancedAchievementsAPI> optional = AdvancedAchievementsAPIFetcher.fetchInstance();
         if (optional.isPresent()) {
             AdvancedAchievementsAPI api = optional.get();
@@ -33,22 +44,21 @@ public class CommandAAchCheck extends ModuleCommand {
                 if (e.getValue() >= module.getTotalAchievements()) {
                     OfflinePlayer player = module.getPlugin().getServer().getOfflinePlayer(e.getKey());
                     if (player.getName() == null) {
-                        getModule().getMessager().sendMessageTo(sender,
+                        module.getMessager().sendMessageTo(sender,
                                 new TextComponent(ChatColor.RED + "找不到全成就玩家" + e.getKey().toString()));
                     } else {
-                        getModule().getMessager().sendMessageTo(sender,
+                        module.getMessager().sendMessageTo(sender,
                                 new TextComponent(player.getName() + "已完成全成就，正在添加权限"));
-                        module.addPermission(e.getKey());
+                        module.addPermission(player);
                     }
                 }
             });
 
         } else {
             module.logger().severe("Unable to find AdvancedAchievements");
-            getModule().getMessager().sendMessageTo(sender,
+            module.getMessager().sendMessageTo(sender,
                     new TextComponent(ChatColor.RED + "找不到AdvancedAchievements，无法完成此操作"));
         }
-        return true;
     }
 
 }

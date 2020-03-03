@@ -37,7 +37,7 @@ public class CMIFeatures extends Module implements Listener {
 
         CMIUser user = CMI.getInstance().getPlayerManager().getUser(event.getPlayer());
 
-        if (user != null && !user.isCollidable()) {
+        if (user != null && !user.isCollidable() && !user.isVanished()) {
             logger().info("It seems that " + event.getPlayer().getName()
                     + " unable to collide under CMI control, Making him/her be able to collide");
             getMessager().sendMessageTo(event.getPlayer(), new TextComponent("§c看起来你不能和其他玩家愉快的碰撞呢"));
@@ -69,7 +69,6 @@ public class CMIFeatures extends Module implements Listener {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
 
         CommandAddJailTime addjailtime = new CommandAddJailTime(this);
-        addjailtime.registerDefaultPermission();
         plugin.getCommandManager().registerCommand(addjailtime);
     }
 

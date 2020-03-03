@@ -2,13 +2,15 @@ package xianxian.mc.starocean.dailyrewards;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import net.md_5.bungee.api.ChatColor;
+import xianxian.mc.starocean.GUI;
 
-public class DailyRewardsGUI {
+public class DailyRewardsGUI extends GUI {
     private DailyRewards module;
     private DailyRewardsPlayer playerInfo;
     private Player player;
@@ -21,28 +23,42 @@ public class DailyRewardsGUI {
     private int claimableDay = 0;
 
     public DailyRewardsGUI(DailyRewards module, Player player, DailyRewardsPlayer playerInfo) {
+        super(module, player);
         this.module = module;
         this.player = player;
         this.playerInfo = playerInfo;
+        prepare();
     }
 
-    public void show() {
-        inventory = module.getPlugin().getServer().createInventory(player, 27, ChatColor.AQUA + "星海签到");
-        ItemMeta borderLineMeta = borderLine.getItemMeta();
-        borderLineMeta.setDisplayName(" ");
-        borderLine.setItemMeta(borderLineMeta);
+    public void destroy() {
+        this.module = null;
+        this.player = null;
+        this.playerInfo = null;
+    }
 
-        ItemMeta claimedMeta = claimed.getItemMeta();
-        claimedMeta.setDisplayName(ChatColor.GRAY + "" + ChatColor.BOLD + "已领取");
-        claimed.setItemMeta(claimedMeta);
+    public void click(InventoryClickEvent event) {
+        int index = event.getSlot();
+        int[] pos = calculatePosition(index);
 
-        ItemMeta claimableMeta = claimable.getItemMeta();
-        claimableMeta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "可领取");
-        claimable.setItemMeta(claimableMeta);
+        int x = pos[0];
+        int y = pos[1];
 
-        ItemMeta unclaimableMeta = unclaimable.getItemMeta();
-        unclaimableMeta.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + "不可领取");
-        unclaimable.setItemMeta(unclaimableMeta);
+        if (x == claimableDay && y == 1 && x != 0 && x != 8) {
+            Reward reward = module.claim(player, playerInfo, claimableDay);
+            ItemStack info = claimed.clone();
+            ItemMeta infoMeta = info.getItemMeta();
+            infoMeta.setLore(reward.getRewardInfo());
+            info.setItemMeta(infoMeta);
+            setItemAtPosition(x, y, info);
+        }
+    }
+
+    private void setItemAtPosition(int x, int y, ItemStack stack) {
+        inventory.setItem(calculateIndex(x, y), stack);
+    }
+
+    @Override
+    public void refresh() {
 
         for (int i = 0; i < 9; i++) {
             setItemAtPosition(i, 0, borderLine);
@@ -85,41 +101,32 @@ public class DailyRewardsGUI {
             }
         }
 
-        player.openInventory(inventory);
     }
 
-    public void close() {
-        this.module = null;
-        this.player = null;
-        this.playerInfo = null;
+    @Override
+    public Inventory getInventory() {
+        return inventory;
     }
 
-    public void click(int index) {
-        int[] pos = calculatePosition(index);
+    @Override
+    public void prepare() {
+        inventory = module.getPlugin().getServer().createInventory(player, 27, ChatColor.AQUA + "星海签到");
+    
+        ItemMeta borderLineMeta = borderLine.getItemMeta();
+        borderLineMeta.setDisplayName(" ");
+        borderLine.setItemMeta(borderLineMeta);
 
-        int x = pos[0];
-        int y = pos[1];
+        ItemMeta claimedMeta = claimed.getItemMeta();
+        claimedMeta.setDisplayName(ChatColor.GRAY + "" + ChatColor.BOLD + "已领取");
+        claimed.setItemMeta(claimedMeta);
 
-        if (x == claimableDay && y == 1 && x != 0 && x != 8) {
-            Reward reward = module.claim(player, playerInfo, claimableDay);
-            ItemStack info = claimed.clone();
-            ItemMeta infoMeta = info.getItemMeta();
-            infoMeta.setLore(reward.getRewardInfo());
-            info.setItemMeta(infoMeta);
-            setItemAtPosition(x, y, info);
-        }
-    }
+        ItemMeta claimableMeta = claimable.getItemMeta();
+        claimableMeta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "可领取");
+        claimable.setItemMeta(claimableMeta);
 
-    private void setItemAtPosition(int x, int y, ItemStack stack) {
-        inventory.setItem(calculateIndex(x, y), stack);
-    }
-
-    private int[] calculatePosition(int index) {
-        return new int[] { index % 9, index / 9 };
-    }
-
-    private int calculateIndex(int x, int y) {
-        return x + (9 * y);
+        ItemMeta unclaimableMeta = unclaimable.getItemMeta();
+        unclaimableMeta.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + "不可领取");
+        unclaimable.setItemMeta(unclaimableMeta);
     }
 
 }

@@ -1,26 +1,12 @@
 package xianxian.mc.starocean;
 
-import java.util.List;
+import co.aikar.commands.BaseCommand;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandException;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
-
-import net.md_5.bungee.api.ChatColor;
-
-public abstract class ModuleCommand extends Command {
+public abstract class ModuleCommand extends BaseCommand {
     private final Module module;
 
-    protected ModuleCommand(Module module, String name) {
-        super(name);
-        this.module = module;
-    }
-
-    protected ModuleCommand(Module module, String name, String description, String usageMessage, List<String> aliases) {
-        super(name, description, usageMessage, aliases);
+    protected ModuleCommand(Module module) {
+        super();
         this.module = module;
     }
 
@@ -28,7 +14,7 @@ public abstract class ModuleCommand extends Command {
         return module;
     }
 
-    @Override
+    /*@Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if (this.getPermission() == null) {
             if (sender instanceof ConsoleCommandSender || sender.isOp())
@@ -65,7 +51,11 @@ public abstract class ModuleCommand extends Command {
     public void registerDefaultPermission() {
         String permissionNode = (module.getPlugin().getName() + "." + module.getModuleName() + "." + this.getName())
                 .toLowerCase();
-
+        
+        registerPermission(permissionNode);
+    }
+    
+    public void registerPermission(String permissionNode) {
         Permission permission = new Permission(permissionNode,
                 "Permission of command " + this.getModule().getIdentifiedName() + ":" + this.getName(),
                 PermissionDefault.OP);
@@ -73,4 +63,5 @@ public abstract class ModuleCommand extends Command {
         module.getPlugin().getPermissionManager().registerPermission(permission);
         this.setPermission(permission.getName());
     }
+    */
 }

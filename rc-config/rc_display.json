@@ -1,0 +1,12 @@
+{
+  "display.simplfy": true,
+  "display.jumphelp": true,
+  "display.topmost": false,
+  "display.language": "en",
+  "display.style": "flat",
+  "display.loglevel": "INFO",
+  "display.buttonbar": true,
+  "display.maxlength.tree": 75,
+  "display.treesourcename": false,
+  "display.exitwarning": true
+}

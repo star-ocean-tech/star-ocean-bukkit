@@ -28,7 +28,7 @@ public class StatisticTopScreen extends Screen {
     public List<String> getLines() {
         return null;
     }
-    
+
     @Override
     public boolean isDirty() {
         return module.isDirty();
@@ -36,31 +36,33 @@ public class StatisticTopScreen extends Screen {
 
     @Override
     public void refresh() {
-        List<PlayerData> datas = module.getStatisticTop();
-        for (int i = 0, count = module.getDisplayCount(), size = datas.size(); i <= count && i < size; i++) {
-            PlayerData data = datas.get(i);
-            if (data.isVisible()) {
-                if (!playersToDisplay.contains(data))
-                    playersToDisplay.add(data);
-                Score score = objective.getScore(data.getDisplayName());
-                if (score.getScore() != data.getValue()) {
-                    score.setScore(data.getValue());
+        module.getPlugin().newTaskChain().async(() -> {
+            List<PlayerData> datas = module.getStatisticTop();
+            for (int i = 0, count = module.getDisplayCount(), size = datas.size(); i <= count && i < size; i++) {
+                PlayerData data = datas.get(i);
+                if (data.isVisible()) {
+                    if (!playersToDisplay.contains(data))
+                        playersToDisplay.add(data);
+                    Score score = objective.getScore(data.getDisplayName());
+                    if (score.getScore() != data.getValue()) {
+                        score.setScore(data.getValue());
+                    }
+                } else {
+                    scoreboard.resetScores(data.getDisplayName());
+                    count++;
                 }
-            } else {
-                scoreboard.resetScores(data.getDisplayName());
-                count++;
             }
-        }
-        
-        playersToDisplay.sort(StatisticTop.COMPARATOR);
-        playersToDisplay.removeIf((data)->{
-            if (playersToDisplay.indexOf(data) >= module.getDisplayCount()) {
-                scoreboard.resetScores(data.getDisplayName());
-                return true;
-            } else 
-                return false;
+
+            playersToDisplay.sort(StatisticTop.COMPARATOR);
+            playersToDisplay.removeIf((data) -> {
+                if (playersToDisplay.indexOf(data) >= module.getDisplayCount()) {
+                    scoreboard.resetScores(data.getDisplayName());
+                    return true;
+                } else
+                    return false;
+            });
         });
-        
+
         player.setScoreboard(scoreboard);
     }
 }

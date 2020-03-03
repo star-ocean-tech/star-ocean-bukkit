@@ -45,7 +45,6 @@ public class StarOceanWar extends Module {
         plugin.getServer().getPluginManager().registerEvents(new WarListener(this), plugin);
         
         CommandWar war = new CommandWar(this);
-        war.registerDefaultPermission();
         plugin.getCommandManager().registerCommand(war);
         
         

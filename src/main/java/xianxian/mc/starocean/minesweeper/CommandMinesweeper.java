@@ -5,25 +5,24 @@ import java.util.Arrays;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.Default;
+import co.aikar.commands.annotation.Subcommand;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import xianxian.mc.starocean.ModuleCommand;
 
+@CommandAlias("minesweeper")
 public class CommandMinesweeper extends ModuleCommand {
 
     protected CommandMinesweeper(MinesweeperModule module) {
-        super(module, "minesweeper", "Starts a new minesweeper game", "/<command>", Arrays.asList());
+        super(module);
+        module.getPlugin().getCommandManager().getCommandContexts().registerContext(MinesweeperModule.class, (s)->module);
     }
 
-    @Override
-    public boolean onCommand(CommandSender sender, String commandLabel, String[] args) {
-        if (sender instanceof Player) {
-            getModule().getMessager().sendMessageTo(sender, new TextComponent("欢迎进入扫雷游戏"));
-            ((MinesweeperModule) getModule()).newGameFor((Player) sender);
-        } else {
-            getModule().getMessager().sendMessageTo(sender, new TextComponent(ChatColor.RED + "只有玩家才能开始扫雷哦"));
-        }
-        return true;
+    @Default
+    @Subcommand("open")
+    public static void open(Player player, MinesweeperModule module) {
+        module.newGameFor(player);
     }
-
 }
