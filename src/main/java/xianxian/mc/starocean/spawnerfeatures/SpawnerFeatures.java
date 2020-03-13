@@ -1,11 +1,9 @@
 package xianxian.mc.starocean.spawnerfeatures;
 
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Material;
-import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -17,7 +15,6 @@ import org.bukkit.permissions.Permission;
 
 import de.tr7zw.nbtapi.NBTItem;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import xianxian.mc.starocean.AbstractPlugin;
 import xianxian.mc.starocean.Module;

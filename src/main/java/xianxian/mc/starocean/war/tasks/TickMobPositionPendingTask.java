@@ -1,7 +1,6 @@
 package xianxian.mc.starocean.war.tasks;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import xianxian.mc.starocean.war.War;

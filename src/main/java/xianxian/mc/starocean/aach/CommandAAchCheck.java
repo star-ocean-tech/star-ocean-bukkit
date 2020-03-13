@@ -1,6 +1,5 @@
 package xianxian.mc.starocean.aach;
 
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -21,14 +20,10 @@ import net.md_5.bungee.api.chat.TextComponent;
 import xianxian.mc.starocean.ModuleCommand;
 
 @CommandAlias("aachcheck")
-public class CommandAAchCheck extends ModuleCommand {
-    private AdvancedAchievementsFeatures module;
+public class CommandAAchCheck extends ModuleCommand<AdvancedAchievementsFeatures> {
 
     protected CommandAAchCheck(AdvancedAchievementsFeatures module) {
-        //super(module, "aachcheck", "", "/<command>", Arrays.asList());
         super(module);
-        this.module = module;
-        module.getPlugin().getCommandManager().getCommandContexts().registerContext(AdvancedAchievementsFeatures.class, (s)->module);
     }
 
     @Default

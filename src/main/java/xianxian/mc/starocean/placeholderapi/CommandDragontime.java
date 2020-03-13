@@ -1,25 +1,20 @@
 package xianxian.mc.starocean.placeholderapi;
 
-import java.util.Arrays;
-
 import org.bukkit.entity.Player;
 
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Description;
-import co.aikar.commands.annotation.Subcommand;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
-import xianxian.mc.starocean.Module;
 import xianxian.mc.starocean.ModuleCommand;
 
 @CommandAlias("dragontime")
-public class CommandDragontime extends ModuleCommand {
+public class CommandDragontime extends ModuleCommand<PlaceHolderAPIFeatures> {
 
     protected CommandDragontime(PlaceHolderAPIFeatures module) {
         super(module);
-        module.getPlugin().getCommandManager().getCommandContexts().registerContext(PlaceHolderAPIFeatures.class, (s)->module);
     }
 
     @Default

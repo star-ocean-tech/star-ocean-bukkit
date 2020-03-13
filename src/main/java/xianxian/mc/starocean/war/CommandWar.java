@@ -1,12 +1,8 @@
 package xianxian.mc.starocean.war;
 
-import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
 
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
@@ -18,13 +14,10 @@ import net.md_5.bungee.api.ChatColor;
 import xianxian.mc.starocean.ModuleCommand;
 
 @CommandAlias("war")
-public class CommandWar extends ModuleCommand {
-    private final StarOceanWar module;
+public class CommandWar extends ModuleCommand<StarOceanWar> {
     
     public CommandWar(StarOceanWar module) {
         super(module);
-        this.module = module;
-        module.getPlugin().getCommandManager().getCommandContexts().registerContext(StarOceanWar.class, (s)->module);
     }
     
     @Subcommand("join")

@@ -36,19 +36,18 @@ public class StarOceanWar extends Module {
 
     @Override
     public boolean checkIfCanLoad() {
-        return getPlugin().getModuleManager().isModuleLoaded(CMIFeatures.class);
+        return true;
     }
 
     @Override
     public void prepare() {
+        reload();
+        
         plugin.getServer().getPluginManager().registerEvents(new GUIListener(), plugin);
         plugin.getServer().getPluginManager().registerEvents(new WarListener(this), plugin);
         
         CommandWar war = new CommandWar(this);
         plugin.getCommandManager().registerCommand(war);
-        
-        
-        reload();
     }
 
     @Override

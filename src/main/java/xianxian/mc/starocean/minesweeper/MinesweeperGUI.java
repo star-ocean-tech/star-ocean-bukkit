@@ -1,6 +1,5 @@
 package xianxian.mc.starocean.minesweeper;
 
-import java.util.UUID;
 import java.util.logging.Logger;
 
 import org.bukkit.Material;
@@ -18,7 +17,7 @@ import com.google.common.eventbus.Subscribe;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import xianxian.mc.starocean.AbstractPlugin;
-import xianxian.mc.starocean.GUI;
+import xianxian.mc.starocean.gui.GUI;
 import xianxian.mc.starocean.minesweeper.MinesweeperEvent.Fail;
 import xianxian.mc.starocean.minesweeper.MinesweeperEvent.TileEvent;
 import xianxian.mc.starocean.minesweeper.MinesweeperEvent.Win;
@@ -48,7 +47,7 @@ public class MinesweeperGUI extends GUI {
         this.player = player;
         this.logger = Logger.getLogger(player.getDisplayName() + "-Minesweeper");
         this.status = GameStatus.PREPARED;
-        prepare();
+        onCreate();
     }
     
     @Override
@@ -74,10 +73,9 @@ public class MinesweeperGUI extends GUI {
     }
 
     @Override
-    public void show() {
+    public void onResume() {
         game.getMinesweeperEventBus().register(this);
         this.status = GameStatus.PLAYING;
-        super.show();
     }
 
     @Subscribe
@@ -123,10 +121,9 @@ public class MinesweeperGUI extends GUI {
     }
 
     @Override
-    public void prepare() {
-        inventory = plugin.getServer().createInventory(player, 54, ChatColor.AQUA+"扫雷");
+    public void onCreate() {
+        inventory = plugin.getServer().createInventory(this, 54, ChatColor.AQUA+"扫雷");
         game = new Minesweeper(player.getDisplayName(), 8, 6, 8);
-        //ItemStack close = new ItemStack(Material.BARRIER, 1);
         
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
         if (head.getItemMeta() instanceof SkullMeta) {
@@ -174,7 +171,7 @@ public class MinesweeperGUI extends GUI {
     }
 
     @Override
-    public void destroy() {
+    public void onDestroy() {
         
     }
 }

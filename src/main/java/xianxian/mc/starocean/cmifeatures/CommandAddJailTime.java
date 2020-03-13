@@ -1,7 +1,5 @@
 package xianxian.mc.starocean.cmifeatures;
 
-import java.util.Arrays;
-
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -15,15 +13,13 @@ import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Syntax;
 import net.md_5.bungee.api.ChatColor;
-import xianxian.mc.starocean.Module;
 import xianxian.mc.starocean.ModuleCommand;
 
 @CommandAlias("addjailtime")
-public class CommandAddJailTime extends ModuleCommand {
+public class CommandAddJailTime extends ModuleCommand<CMIFeatures> {
 
     protected CommandAddJailTime(CMIFeatures module) {
         super(module);
-        module.getPlugin().getCommandManager().getCommandContexts().registerContext(CMIFeatures.class, (s)->module);
     }
     
     

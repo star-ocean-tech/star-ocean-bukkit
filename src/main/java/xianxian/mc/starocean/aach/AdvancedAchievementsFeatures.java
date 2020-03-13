@@ -1,6 +1,5 @@
 package xianxian.mc.starocean.aach;
 
-import java.util.UUID;
 import java.util.function.Function;
 
 import org.bukkit.OfflinePlayer;
@@ -17,8 +16,6 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import xianxian.mc.starocean.AbstractPlugin;
 import xianxian.mc.starocean.Module;
-import xianxian.mc.starocean.Modules;
-import xianxian.mc.starocean.luckperms.LuckPermsFeatures;
 import xianxian.mc.starocean.vault.VaultFeatures;
 
 public class AdvancedAchievementsFeatures extends Module implements Listener {

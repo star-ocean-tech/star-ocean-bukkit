@@ -1,8 +1,5 @@
 package xianxian.mc.starocean.statistictop;
 
-import java.util.Arrays;
-
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import co.aikar.commands.annotation.CommandAlias;
@@ -13,13 +10,10 @@ import net.md_5.bungee.api.ChatColor;
 import xianxian.mc.starocean.ModuleCommand;
 
 @CommandAlias("statstop")
-public class CommandStatsTop extends ModuleCommand {
-    private StatisticTop module;
-
+public class CommandStatsTop extends ModuleCommand<StatisticTop> {
+    
     public CommandStatsTop(StatisticTop module) {
         super(module);
-        this.module = module;
-        this.module.getPlugin().getCommandManager().getCommandContexts().registerContext(StatisticTop.class, (s)->module);
     }
     
     @Subcommand("toggle")

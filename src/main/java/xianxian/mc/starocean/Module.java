@@ -104,18 +104,14 @@ public abstract class Module {
     }
 
     public void reloadConfig() {
-        config = loadConfig("module.yml");
-    }
-
-    public FileConfiguration loadConfig(String configFileName) {
-        File configFile = new File(getDataFolder(true), configFileName);
+        File configFile = new File(getDataFolder(true), "module.yml");
         if (!configFile.exists()) {
             try {
                 configFile.createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            InputStream is = this.getClass().getClassLoader().getResourceAsStream(this.getClass().getPackage().getName().replace(".", "/")+"/module.yml");
+            InputStream is = plugin.getResource(this.getClass().getPackage().getName().replace(".", "/")+"/module.yml");
             if (is != null) {
                 try {
                     Files.asByteSink(configFile).writeFrom(is);
@@ -127,6 +123,12 @@ public abstract class Module {
                 }
             }
         }
+        
+        config = loadConfig("module.yml");
+    }
+
+    public FileConfiguration loadConfig(String configFileName) {
+        File configFile = new File(getDataFolder(true), configFileName);
         FileConfiguration config = YamlConfiguration.loadConfiguration(configFile);
         config.options().copyDefaults(true);
         return config;

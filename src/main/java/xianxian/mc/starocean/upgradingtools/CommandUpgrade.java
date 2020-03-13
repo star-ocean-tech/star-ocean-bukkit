@@ -1,9 +1,5 @@
 package xianxian.mc.starocean.upgradingtools;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -16,13 +12,10 @@ import xianxian.mc.starocean.ModuleCommand;
 import xianxian.mc.starocean.upgradingtools.UpgradingTools.ItemInfo;
 
 @CommandAlias("upgrade")
-public class CommandUpgrade extends ModuleCommand {
-    private UpgradingTools module;
+public class CommandUpgrade extends ModuleCommand<UpgradingTools> {
 
     protected CommandUpgrade(UpgradingTools module) {
         super(module);
-        this.module = module;
-        this.module.getPlugin().getCommandManager().getCommandContexts().registerContext(UpgradingTools.class, (s)->module);
     }
 
     @Default

@@ -1,9 +1,8 @@
-package xianxian.mc.starocean;
+package xianxian.mc.starocean.gui;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Stack;
 import java.util.logging.Logger;
 
 import org.bukkit.entity.Player;
@@ -13,14 +12,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryMoveItemEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent.Reason;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import xianxian.mc.starocean.AbstractPlugin;
+
 public class GUIManager implements Listener {
     private AbstractPlugin plugin;
-    private Map<Player, GUI> currentGuiMap = new HashMap<>();
     private Map<Player, GUIStack> guiStacks = new HashMap<>();
     private Logger logger;
     
@@ -42,7 +41,7 @@ public class GUIManager implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         GUIStack stack = this.guiStacks.remove(event.getPlayer());
         if (!stack.isEmpty()) {
-            stack.forEach((gui)->gui.destroy());
+            stack.forEach((gui)->gui.onDestroy());
             stack.clear();
         }
     }
@@ -53,29 +52,55 @@ public class GUIManager implements Listener {
      * @param gui The GUI to display
      */
     public void open(GUI gui) {
-        GUI prevGui = this.currentGuiMap.get(gui.getPlayer());
-        if (prevGui != null)
-            gui.getPlayer().closeInventory();
-        this.currentGuiMap.put(gui.getPlayer(), gui);
+        if (gui.isDestroyed())
+            return;
+        
+        GUIStack stack = this.guiStacks.get(gui.getPlayer());
+        GUI prevGui = stack.peek();
+        if (prevGui != null) {
+            prevGui.onPause();
+        }
         this.guiStacks.get(gui.getPlayer()).offerFirst(gui);
-        gui.show();
+        
+        if (!gui.isCreated()) {
+            plugin.newTaskChain()
+                .asyncFirst(()->{
+                    gui.onCreate();
+                    return gui;
+                })
+                .sync(()->{
+                    gui.onResume();
+                    gui.getPlayer().openInventory(gui.getInventory());
+                })
+                .execute();
+        } else {
+            gui.onResume();
+            gui.getPlayer().openInventory(gui.getInventory());
+        }
     }
     
     public void close(GUI gui) {
         Player player = gui.getPlayer();
-        GUI prevGui = this.currentGuiMap.get(player);
+        
         GUIStack stack = this.guiStacks.get(player);
+        if (stack != null) {
+            stack.poll();
+        }
+        
         stack.remove(gui);
-        gui.destroy();
+        gui.onDestroy();
         gui.setDestroyed(true);
+        
+        GUI prevGui = stack.peek();
+        
         if (prevGui != null && prevGui.equals(gui)) {
-            this.currentGuiMap.remove(player);
             player.closeInventory();
             if (stack.isEmpty())
                 return;
-            GUI newGUI = stack.peek();
-            this.currentGuiMap.put(player, newGUI);
-            newGUI.show();
+            GUI newGUI = stack.poll();
+            if (newGUI != null) {
+                open(newGUI);
+            }
         }
     }
     
@@ -83,9 +108,8 @@ public class GUIManager implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         if (event.isCancelled())
             return;
-        //logger.info(event.getClickedInventory() == null ? "null" : event.getClickedInventory().toString()+": "+event.getSlot());
-        GUI gui = currentGuiMap.get(event.getWhoClicked());
-        if (gui != null) {
+        if (event.getInventory().getHolder() instanceof GUI) {
+            GUI gui = (GUI) event.getInventory().getHolder();
             if (event.getClickedInventory() == null || !event.getClickedInventory().equals(gui.getInventory())) {
                 if (event.getClick().equals(ClickType.SHIFT_LEFT) || event.getClick().equals(ClickType.SHIFT_RIGHT))
                     event.setCancelled(true);
@@ -98,35 +122,25 @@ public class GUIManager implements Listener {
     }
     
     @EventHandler
-    public void onInventoryDrag(InventoryDragEvent event) {
-        GUI gui = currentGuiMap.get(event.getWhoClicked());
-        if (gui != null) {
-            if (event.getInventory().equals(gui.getInventory())) {
-                event.setCancelled(true);
-                return;
-            }
-        }
-    }
-    
-    @EventHandler
-    public void onInventoryMoveItem(InventoryMoveItemEvent event) {
-        currentGuiMap.values().forEach((gui)->{
-            if (event.getDestination().equals(gui.getInventory())) {
-                event.setCancelled(true);
-                return;
-            }
-        });
-    }
-    
-    @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
-        GUI gui = currentGuiMap.remove(event.getPlayer());
-        if (gui != null) {
-            close(gui);
+        if (event.getReason().equals(Reason.PLAYER) || 
+                event.getReason().equals(Reason.DEATH) || 
+                event.getReason().equals(Reason.PLUGIN) || 
+                event.getReason().equals(Reason.TELEPORT)) {
+            if (event.getInventory().getHolder() instanceof GUI) {
+                GUI gui = (GUI) event.getInventory().getHolder();
+                gui.onPause();
+                
+                plugin.newTaskChain().async(()->gui.onDestroy()).execute();
+            }
         }
     }
     
     private static class GUIStack extends LinkedList<GUI> {
-        
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 5396482208795110890L;
     }
 }

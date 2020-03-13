@@ -53,6 +53,11 @@ public class PlayerInteracting extends Module implements Listener {
             player.getWorld().spawnParticle(Particle.HEART,
                     new Location(origin.getWorld(), origin.getX(), origin.getY() + 2, origin.getZ()), 5, 0.1, 0.1, 0.1);
             if (player.isSneaking()) {
+                if (!player.hasPermission("starocean.playerinteract.kiss")) {
+                    getMessager().sendMessageTo(player, new TextComponent(
+                            ChatColor.RED + "你不被允许亲亲"));
+                    return;
+                }
                 clicked.setHealth(clicked.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
                 player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
                 clicked.playSound(clickedOrigin, Sound.BLOCK_SLIME_BLOCK_STEP, SoundCategory.PLAYERS, 100, 1);
@@ -62,6 +67,11 @@ public class PlayerInteracting extends Module implements Listener {
                 getMessager().sendMessageTo(player, new TextComponent(
                         ChatColor.GRAY + "你轻轻地亲了" + clicked.getName() + ChatColor.RESET + ChatColor.GRAY + "一下^_^"));
             } else if (player.isSprinting()) {
+                if (!player.hasPermission("starocean.playerinteract.hang")) {
+                    getMessager().sendMessageTo(player, new TextComponent(
+                            ChatColor.RED + "你不被允许举高高"));
+                    return;
+                }
                 clicked.setVelocity(new Vector(0, 0.5, 0));
                 clicked.playSound(clickedOrigin, Sound.ENTITY_PLAYER_BREATH, SoundCategory.PLAYERS, 100, 1);
                 player.playSound(origin, Sound.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 100, 1);
@@ -71,6 +81,11 @@ public class PlayerInteracting extends Module implements Listener {
                         ChatColor.GRAY + "你把" + clicked.getName() + ChatColor.RESET + ChatColor.GRAY + "举得高高的^_^"));
 
             } else {
+                if (!player.hasPermission("starocean.playerinteract.hug")) {
+                    getMessager().sendMessageTo(player, new TextComponent(
+                            ChatColor.RED + "你不被允许抱抱"));
+                    return;
+                }
                 if (clicked.getHealth() + 1 <= clicked.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()) {
                     clicked.setHealth(clicked.getHealth() + 1);
                 }

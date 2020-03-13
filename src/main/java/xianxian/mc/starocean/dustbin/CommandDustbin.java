@@ -11,15 +11,12 @@ import net.md_5.bungee.api.chat.TextComponent;
 import xianxian.mc.starocean.ModuleCommand;
 
 @CommandAlias("dustbin|garbagebin")
-public class CommandDustbin extends ModuleCommand {
-    private Dustbin module;
+public class CommandDustbin extends ModuleCommand<Dustbin> {
 
-    public CommandDustbin(Dustbin module) {
+    protected CommandDustbin(Dustbin module) {
         super(module);
-        this.module = module;
-        this.module.getPlugin().getCommandManager().getCommandContexts().registerContext(Dustbin.class, (s)->module);
     }
-    
+
     @Default
     @Subcommand("open")
     @CommandPermission("starocean.commands.dustbin.open")

@@ -28,7 +28,7 @@ repositories {
     maven { url 'https://maven.enginehub.org/repo/' }
     maven { url 'https://jitpack.io' }
     maven { url 'https://repo.aikar.co/content/groups/aikar/' }
-    
+    maven { url 'https://jenkins.mtorus.cz/plugin/repository/everything/' }    
 }
 
 dependencies {
@@ -64,6 +64,8 @@ dependencies {
     compile group: 'org.java-websocket', name: 'Java-WebSocket', version: '1.4.0'
     compile group: 'co.aikar', name: 'taskchain-bukkit', version: '3.7.2'
     compile group: 'co.aikar', name: 'acf-paper', version: '0.5.0-SNAPSHOT'
+    //compileOnly group: 'org.screamingsandals.bedwars', name: 'BedWars-API', version: '0.2.6-SNAPSHOT'
+    compile group: 'misat11.lib.sgui', name: 'SimpleGuiFormat', version: '0.0.10-snap7'
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -85,4 +87,5 @@ shadowJar {
     relocate 'org.slf4j', 'xianxian.mc.libs.slf4j'
     relocate 'org.java_websocket', 'xianxian.mc.libs.websocket'
     relocate 'org.jdom', 'xianxian.mc.libs.jdom'
+    relocate 'misat11.lib.sgui', 'xianxian.mc.libs.sgui'
 }

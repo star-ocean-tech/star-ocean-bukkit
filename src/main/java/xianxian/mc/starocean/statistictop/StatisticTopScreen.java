@@ -11,7 +11,6 @@ import xianxian.mc.starocean.scoreboard.Screen;
 
 public class StatisticTopScreen extends Screen {
     private StatisticTop module;
-    private List<PlayerData> playersToDisplay = new ArrayList<PlayerData>();
 
     public StatisticTopScreen(StatisticTop myModule, ScoreboardScreen module, Player player) {
         super(module, player);
@@ -37,12 +36,12 @@ public class StatisticTopScreen extends Screen {
     @Override
     public void refresh() {
         module.getPlugin().newTaskChain().async(() -> {
-            List<PlayerData> datas = module.getStatisticTop();
+            if (module.isRefreshing())
+                return;
+            List<PlayerData> datas = module.getPlayersToDisplay();
             for (int i = 0, count = module.getDisplayCount(), size = datas.size(); i <= count && i < size; i++) {
                 PlayerData data = datas.get(i);
                 if (data.isVisible()) {
-                    if (!playersToDisplay.contains(data))
-                        playersToDisplay.add(data);
                     Score score = objective.getScore(data.getDisplayName());
                     if (score.getScore() != data.getValue()) {
                         score.setScore(data.getValue());
@@ -52,17 +51,8 @@ public class StatisticTopScreen extends Screen {
                     count++;
                 }
             }
-
-            playersToDisplay.sort(StatisticTop.COMPARATOR);
-            playersToDisplay.removeIf((data) -> {
-                if (playersToDisplay.indexOf(data) >= module.getDisplayCount()) {
-                    scoreboard.resetScores(data.getDisplayName());
-                    return true;
-                } else
-                    return false;
-            });
-        });
-
-        player.setScoreboard(scoreboard);
+        }).sync(()->{
+            player.setScoreboard(scoreboard);
+        }).execute();
     }
 }

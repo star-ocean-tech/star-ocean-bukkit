@@ -3,7 +3,6 @@ package xianxian.mc.starocean.war.mythicmobs;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.logging.Logger;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;

@@ -1,14 +1,22 @@
-package xianxian.mc.starocean;
+package xianxian.mc.starocean.gui;
 
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 
-public abstract class GUI {
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
+
+import xianxian.mc.starocean.Module;
+import xianxian.mc.starocean.gui.view.View;
+
+public abstract class GUI implements InventoryHolder {
     private final Module module;
     private final Player player;
     private boolean destroyed;
+    private Table<Integer, Integer, View> views = HashBasedTable.create();
+    private boolean created = false;
     
     public GUI(Module module, Player player) {
         this.module = module;
@@ -16,9 +24,9 @@ public abstract class GUI {
     }
     
     /**
-     * Called when initialize the GUI
+     * Called when initialize the GUI, Will be called async
      */
-    public abstract void prepare();
+    public abstract void onCreate();
 
     /**
      * Refresh the entire GUI
@@ -29,7 +37,14 @@ public abstract class GUI {
      * Called when click the GUI's slot
      * @param event called the CUI
      */
-    public abstract void click(InventoryClickEvent event);
+    public void click(InventoryClickEvent event) {
+        View view = views.get(event.getSlot() % 9, event.getSlot() / 9);
+        view.click(event);
+    }
+    
+    public void setSlot(int x, int y, View view) {
+        views.column(y).put(x, view);
+    }
     
     /**
      * Get the inventory of this GUI
@@ -44,16 +59,17 @@ public abstract class GUI {
         return player;
     }
     
-    public void show() {
-        refresh();
-        player.openInventory(getInventory());
-    }
-    
     /**
      * Called when destory the GUI, Subclasses<br>
      * shouldn't call Player.closeInventory in this method
      */
-    public abstract void destroy();
+    public abstract void onDestroy();
+    
+    public void onResume() {
+        refresh();
+    }
+    
+    public void onPause() {}
     
     public Module getModule() {
         return module;
@@ -74,4 +90,14 @@ public abstract class GUI {
     protected int calculateIndex(int x, int y) {
         return x + (9 * y);
     }
+
+    public boolean isCreated() {
+        return created;
+    }
+
+    public void setCreated(boolean created) {
+        this.created = created;
+    }
+    
+    
 }

@@ -5,6 +5,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import co.aikar.commands.BukkitCommandManager;
 import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
+import xianxian.mc.starocean.gui.GUIManager;
 
 public abstract class AbstractPlugin extends JavaPlugin {
     public abstract ModuleManager getModuleManager();

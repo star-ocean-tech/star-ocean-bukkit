@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import net.md_5.bungee.api.ChatColor;
-import xianxian.mc.starocean.GUI;
+import xianxian.mc.starocean.gui.GUI;
 
 public class DailyRewardsGUI extends GUI {
     private DailyRewards module;
@@ -27,10 +27,10 @@ public class DailyRewardsGUI extends GUI {
         this.module = module;
         this.player = player;
         this.playerInfo = playerInfo;
-        prepare();
+        onCreate();
     }
 
-    public void destroy() {
+    public void onDestroy() {
         this.module = null;
         this.player = null;
         this.playerInfo = null;
@@ -109,8 +109,8 @@ public class DailyRewardsGUI extends GUI {
     }
 
     @Override
-    public void prepare() {
-        inventory = module.getPlugin().getServer().createInventory(player, 27, ChatColor.AQUA + "星海签到");
+    public void onCreate() {
+        inventory = module.getPlugin().getServer().createInventory(this, 27, ChatColor.AQUA + "星海签到");
     
         ItemMeta borderLineMeta = borderLine.getItemMeta();
         borderLineMeta.setDisplayName(" ");

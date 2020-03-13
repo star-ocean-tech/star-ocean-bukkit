@@ -7,8 +7,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.google.common.collect.Lists;
-
 public class Paging<T> {
     private final ExecutorService EXECUTOR = Executors.newCachedThreadPool();
     

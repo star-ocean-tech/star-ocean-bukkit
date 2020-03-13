@@ -1,17 +1,10 @@
 package xianxian.mc.starocean.robot;
 
-import java.util.Arrays;
-import java.util.Optional;
-
-import org.bukkit.command.CommandSender;
-
-import net.md_5.bungee.api.chat.TextComponent;
-import xianxian.mc.starocean.Module;
 import xianxian.mc.starocean.ModuleCommand;
 
-public class CommandRobot extends ModuleCommand {
+public class CommandRobot extends ModuleCommand<StarOceanRobot> {
 
-    protected CommandRobot(Module module) {
+    protected CommandRobot(StarOceanRobot module) {
         super(module);
         // TODO Auto-generated constructor stub
     }

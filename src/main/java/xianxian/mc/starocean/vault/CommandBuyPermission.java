@@ -1,8 +1,5 @@
 package xianxian.mc.starocean.vault;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -17,17 +14,13 @@ import net.md_5.bungee.api.ChatColor;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import net.milkbowl.vault.permission.Permission;
-import xianxian.mc.starocean.Module;
 import xianxian.mc.starocean.ModuleCommand;
 
 @CommandAlias("buypermission|buyperm")
-public class CommandBuyPermission extends ModuleCommand {
-    private VaultFeatures module;
+public class CommandBuyPermission extends ModuleCommand<VaultFeatures> {
     
     public CommandBuyPermission(VaultFeatures module) {
         super(module);
-        this.module = module;
-        this.module.getPlugin().getCommandManager().getCommandContexts().registerContext(VaultFeatures.class, (s)->module);
     }
     
     @Default

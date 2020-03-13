@@ -1,8 +1,5 @@
 package xianxian.mc.starocean.behead;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -15,17 +12,13 @@ import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.annotation.Syntax;
 import co.aikar.commands.bukkit.contexts.OnlinePlayer;
 import net.md_5.bungee.api.ChatColor;
-import xianxian.mc.starocean.Module;
 import xianxian.mc.starocean.ModuleCommand;
 
 @CommandAlias("behead")
-public class CommandBehead extends ModuleCommand {
-    private Behead behead;
+public class CommandBehead extends ModuleCommand<Behead> {
     
     public CommandBehead(Behead module) {
         super(module);
-        this.behead = module;
-        this.behead.getPlugin().getCommandManager().getCommandContexts().registerContext(Behead.class, (s)->behead);
     }
     
     @Subcommand("clear")

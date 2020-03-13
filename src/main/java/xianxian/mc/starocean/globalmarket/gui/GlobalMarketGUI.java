@@ -23,12 +23,12 @@ import org.jetbrains.annotations.Nullable;
 import com.google.common.collect.Lists;
 
 import net.md_5.bungee.api.ChatColor;
-import xianxian.mc.starocean.GUI;
 import xianxian.mc.starocean.Module;
 import xianxian.mc.starocean.globalmarket.GlobalMarket;
 import xianxian.mc.starocean.globalmarket.Paging;
 import xianxian.mc.starocean.globalmarket.messages.MessagesManager.MessagesUser;
 import xianxian.mc.starocean.globalmarket.record.MarketRecord;
+import xianxian.mc.starocean.gui.GUI;
 
 public class GlobalMarketGUI extends GUI {
     private Inventory inventory;
@@ -62,7 +62,6 @@ public class GlobalMarketGUI extends GUI {
         super(module, player);
         this.module = module;
         this.paging = module.getMarketManager().getDefaultPaging();
-        prepare();
     }
     
     public GlobalMarketGUI(GlobalMarket module, Player player, List<MarketRecord> records) {
@@ -70,12 +69,11 @@ public class GlobalMarketGUI extends GUI {
         this.module = module;
         this.paging = new Paging<MarketRecord>(36);
         this.paging.page(records);
-        prepare();
     }
 
     @Override
-    public void prepare() {
-        inventory = getModule().getPlugin().getServer().createInventory(getPlayer(), 54, ChatColor.AQUA + "全球商店");
+    public void onCreate() {
+        inventory = getModule().getPlugin().getServer().createInventory(this, 54, ChatColor.AQUA + "全球商店");
         
         playerInfo = new ItemStack(Material.PLAYER_HEAD);
         ItemMeta playerInfoMeta = playerInfo.getItemMeta();
@@ -313,7 +311,7 @@ public class GlobalMarketGUI extends GUI {
     }
 
     @Override
-    public void destroy() {
+    public void onDestroy() {
         // TODO Auto-generated method stub
 
     }

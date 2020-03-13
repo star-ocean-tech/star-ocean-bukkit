@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.bukkit.Material;
 import org.bukkit.Statistic;
@@ -42,6 +43,8 @@ public class StatisticTop extends Module implements Listener {
     private final ScoreboardScreen screenModule = getPlugin().getModuleManager().getLoadedModule(ScoreboardScreen.class);
 
     private boolean dirty;
+    
+    private AtomicBoolean booleanIsRefreshing = new AtomicBoolean(false);
     
     public StatisticTop(AbstractPlugin plugin) {
         super(plugin);
@@ -272,6 +275,40 @@ public class StatisticTop extends Module implements Listener {
             return total;
         } else {
             return player.getStatistic(statistic);
+        }
+    }
+    
+    public boolean isRefreshing() {
+        return booleanIsRefreshing.get();
+    }
+    
+    public List<PlayerData> getPlayersToDisplay() {
+        return playersToDisplay;
+    }
+    
+    public class RefreshRunnable extends BukkitRunnable {
+
+        @Override
+        public void run() {
+            if (isDirty()) {
+                booleanIsRefreshing.set(true);
+                setDirty(false);
+                statisticTop.sort(COMPARATOR);
+                playersToDisplay.clear();
+                int count = 0;
+                for (int i = 0, size = statisticTop.size(); i < size; i++) {
+                    if (count < displayCount) {
+                        PlayerData data = statisticTop.get(i);
+                        if (!data.isVisible())
+                            continue;
+                        count++;
+                        playersToDisplay.add(data);
+                    } else {
+                        break;
+                    }
+                }
+                booleanIsRefreshing.set(false);
+            }
         }
     }
 }

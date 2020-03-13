@@ -4,7 +4,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -15,11 +14,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.google.common.collect.Lists;
 
 import net.md_5.bungee.api.ChatColor;
-import xianxian.mc.starocean.GUI;
 import xianxian.mc.starocean.globalmarket.GlobalMarket;
 import xianxian.mc.starocean.globalmarket.Paging;
 import xianxian.mc.starocean.globalmarket.messages.Message;
 import xianxian.mc.starocean.globalmarket.messages.MessagesManager.MessagesUser;
+import xianxian.mc.starocean.gui.GUI;
 
 public class MessagesGUI extends GUI {
     private final GlobalMarket module;
@@ -52,12 +51,12 @@ public class MessagesGUI extends GUI {
         this.user = user;
         if (user != null)
             this.paging = user.getPaging();
-        prepare();
+        onCreate();
     }
 
     @Override
-    public void prepare() {
-        inventory = getModule().getPlugin().getServer().createInventory(getPlayer(), 54, ChatColor.AQUA + "信息");
+    public void onCreate() {
+        inventory = getModule().getPlugin().getServer().createInventory(this, 54, ChatColor.AQUA + "信息");
         
         borderLine = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
         ItemMeta borderLineMeta = borderLine.getItemMeta();
@@ -195,17 +194,17 @@ public class MessagesGUI extends GUI {
         } else if (x == 7 && y == 0) {
             user.getUnreadMessages().forEach((message)->{
                 message.setRead(true);
-                module.getStorage().updateMessage(message);
+                module.getPlugin().newTaskChain().async(()->module.getStorage().updateMessage(message)).execute();
             });
             user.getUnreadMessages().clear();
             refresh();
         } else if (x == 8 && y == 0) {
             user.getMessages().forEach((message)->{
-                module.getStorage().removeMessage(message);
+                module.getPlugin().newTaskChain().async(()->module.getStorage().removeMessage(message)).execute();
             });
             user.getMessages().clear();
             refresh();
-        } else if (slot > 9 && slot < 46) {
+        } else if (slot >= 9 && slot < 46) {
             GUISlot guiSlot = getBySlot(slot);
             if (guiSlot == null) {
                 return;
@@ -217,14 +216,17 @@ public class MessagesGUI extends GUI {
                         return;
                     user.getUnreadMessages().remove(guiSlot.getMessage());
                     guiSlot.getMessage().setRead(true);
-                    module.getStorage().updateMessage(guiSlot.getMessage());
+                    module.getPlugin().newTaskChain().async(()->module.getStorage().updateMessage(guiSlot.getMessage())).execute();;
+                    guiSlot.refreshItem();
                     break;
                 case RIGHT:
+                    inventory.setItem(guiSlot.pos, null);
+                    this.currentSlots.remove(guiSlot);
                     user.getMessages().remove(guiSlot.getMessage());
                     if (!guiSlot.getMessage().isRead()) {
                         user.getUnreadMessages().remove(guiSlot.getMessage());
                     }
-                    module.getStorage().removeMessage(guiSlot.getMessage());
+                    module.getPlugin().newTaskChain().async(()->module.getStorage().removeMessage(guiSlot.getMessage()));
                     refresh();
                     break;
                 default:
@@ -248,9 +250,8 @@ public class MessagesGUI extends GUI {
     }
 
     @Override
-    public void destroy() {
-        // TODO Auto-generated method stub
-
+    public void onDestroy() {
+        
     }
     
     private void setItemDisplayName(ItemStack stack, String displayName) {
@@ -258,6 +259,7 @@ public class MessagesGUI extends GUI {
         meta.setDisplayName(displayName);
         stack.setItemMeta(meta);
     }
+    
     private class GUISlot {
         private int pos;
         private Message message;
@@ -266,6 +268,10 @@ public class MessagesGUI extends GUI {
         public GUISlot(int pos, Message message) {
             this.pos = pos;
             this.message = message;
+            refreshItem();
+        }
+        
+        public void refreshItem() {
             if (message.isRead())
                 this.displayItem = new ItemStack(Material.BOOK);
             else 

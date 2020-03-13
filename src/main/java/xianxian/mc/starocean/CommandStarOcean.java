@@ -1,15 +1,12 @@
 package xianxian.mc.starocean;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 
 import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Subcommand;
@@ -22,12 +19,11 @@ import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
 import xianxian.mc.starocean.StarOcean.StarOceanModule;
 
-@CommandAlias("starocean|starocean:starocean")
-public class CommandStarOcean extends ModuleCommand {
+@CommandAlias("starocean")
+public class CommandStarOcean extends ModuleCommand<StarOceanModule> {
 
     protected CommandStarOcean(StarOceanModule module) {
         super(module);
-        module.getPlugin().getCommandManager().getCommandContexts().registerContext(StarOceanModule.class, (c)->module);
         module.getPlugin().getCommandManager().getCommandCompletions().registerCompletion("modules", (c)->
             module.getPlugin().getModuleManager().getLoadedModules()
                 .stream()
@@ -38,7 +34,7 @@ public class CommandStarOcean extends ModuleCommand {
     
     @Default
     @Subcommand("list")
-    public static void list(CommandSender sender, StarOceanModule module) {
+    public static void list(CommandSender sender, @Default StarOceanModule module) {
         module.getMessager().sendMessageTo(sender,
                 new TextComponent(ChatColor.YELLOW + "小星是服务器的专属机器人，所以StarOcean也是服务器的专属插件哦"));
         if (sender.hasPermission("starocean.listmodules")) {
@@ -58,8 +54,9 @@ public class CommandStarOcean extends ModuleCommand {
     
     @Subcommand("reload")
     @Syntax("<module>")
+    @CommandCompletion("@modules")
     @CommandPermission("starocean.reload")
-    public static void reload(CommandSender sender, StarOceanModule module, @Values("modules") String moduleName) {
+    public static void reload(CommandSender sender, StarOceanModule module, String moduleName) {
         AtomicBoolean isActionPerformed = new AtomicBoolean(false);
         module.getPlugin().getModuleManager().getLoadedModules().forEach((m) -> {
             if (m.getModuleName().equalsIgnoreCase(moduleName)) {

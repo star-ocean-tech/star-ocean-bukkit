@@ -1,29 +1,18 @@
 package xianxian.mc.starocean.globalmarket;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.bukkit.Material;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.permissions.Permission;
 
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Subcommand;
-import net.md_5.bungee.api.ChatColor;
-import xianxian.mc.starocean.Module;
 import xianxian.mc.starocean.ModuleCommand;
 
 @CommandAlias("market")
-public class CommandMarket extends ModuleCommand {
-    private final GlobalMarket module;
+public class CommandMarket extends ModuleCommand<GlobalMarket> {
 
     protected CommandMarket(GlobalMarket module) {
         super(module);
-        this.module = module;
-        this.module.getPlugin().getCommandManager().getCommandContexts().registerContext(GlobalMarket.class, (s)->module);
     }
     
     @Subcommand("open")

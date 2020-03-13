@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -27,11 +26,13 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 import co.aikar.commands.BukkitCommandManager;
+import co.aikar.commands.PaperCommandManager;
 import co.aikar.taskchain.BukkitTaskChainFactory;
 import co.aikar.taskchain.TaskChainFactory;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
+import xianxian.mc.starocean.gui.GUIManager;
 
 public class StarOcean extends AbstractPlugin {
     public static StarOcean INSTANCE;
@@ -63,8 +64,9 @@ public class StarOcean extends AbstractPlugin {
     public void onEnable() {
         super.onEnable();
         this.taskChainFactory = BukkitTaskChainFactory.create(this);
-        commandManager = new BukkitCommandManager(this);
+        commandManager = new PaperCommandManager(this);
         commandManager.enableUnstableAPI("help");
+        //commandManager.setFormat(MessageType.INFO, new BukkitMessageFormatter());
         INSTANCE = this;
         
         guiManager.prepare();
@@ -124,7 +126,7 @@ public class StarOcean extends AbstractPlugin {
             try {
                 enabledModulesFile.createNewFile();
                 List<String> defaultModules = new ArrayList<String>();
-                Arrays.stream(Modules.values()).forEach((m) -> defaultModules.add(m.className()));
+                //Arrays.stream(Modules.values()).forEach((m) -> defaultModules.add(m.className()));
                 Files.write(enabledModulesFile.toPath(), defaultModules, StandardOpenOption.WRITE);
 
             } catch (IOException e1) {

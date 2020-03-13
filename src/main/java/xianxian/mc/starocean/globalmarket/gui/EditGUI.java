@@ -16,10 +16,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import net.md_5.bungee.api.ChatColor;
-import xianxian.mc.starocean.GUI;
 import xianxian.mc.starocean.Module;
 import xianxian.mc.starocean.globalmarket.GlobalMarket;
 import xianxian.mc.starocean.globalmarket.record.MarketRecord;
+import xianxian.mc.starocean.gui.GUI;
 
 public class EditGUI extends GUI {
     private final GlobalMarket module;
@@ -40,12 +40,12 @@ public class EditGUI extends GUI {
         this.parent = parent;
         this.module = module;
         this.record = record;
-        prepare();
+        onCreate();
     }
 
     @Override
-    public void prepare() {
-        inventory = getModule().getPlugin().getServer().createInventory(getPlayer(), 27, ChatColor.GREEN + "编辑商品");
+    public void onCreate() {
+        inventory = getModule().getPlugin().getServer().createInventory(this, 27, ChatColor.GREEN + "编辑商品");
     
         {
             borderLine = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
@@ -135,7 +135,7 @@ public class EditGUI extends GUI {
     }
     
     @Override
-    public void destroy() {
+    public void onDestroy() {
     }
 
     public static class InputNumber {

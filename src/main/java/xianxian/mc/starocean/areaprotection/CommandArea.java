@@ -1,6 +1,5 @@
 package xianxian.mc.starocean.areaprotection;
 
-import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import org.bukkit.Location;
@@ -11,7 +10,6 @@ import co.aikar.commands.CommandHelp;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
-import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.HelpCommand;
 import co.aikar.commands.annotation.Optional;
@@ -25,17 +23,14 @@ import xianxian.mc.starocean.areaprotection.SelectionListener.PlayerContext;
 
 @CommandAlias("areaprotection|ap")
 @Description("Command of area protection")
-public class CommandArea extends ModuleCommand {
-    private AreaProtection module;
+public class CommandArea extends ModuleCommand<AreaProtection> {
     private static final String USAGE = "/<command> new : 添加新区域\n"
             + "/<command> remove <name>: 删除名为<name>的区域\n" + "/<command> enable <name>: 启用名为<name>的区域\n"
             + "/<command> disable <name>: 禁用名为<name>的区域\n" + "/<command> bypass <name> <player>: 使玩家跳过<name>的保护";
 
     public CommandArea(AreaProtection module) {
         super(module);
-        this.module = module;
-        this.module.getPlugin().getCommandManager().getCommandContexts().registerContext(AreaProtection.class, (c)->module);
-        this.module.getPlugin().getCommandManager().getCommandCompletions().registerCompletion("areas", (c)->{
+        module.getPlugin().getCommandManager().getCommandCompletions().registerCompletion("areas", (c)->{
             return module.getLoadedAreas()
                     .stream()
                     .filter((area)->area.getName().startsWith(c.getInput()))

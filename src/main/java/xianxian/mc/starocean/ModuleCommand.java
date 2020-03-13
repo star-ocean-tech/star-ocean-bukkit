@@ -2,15 +2,23 @@ package xianxian.mc.starocean;
 
 import co.aikar.commands.BaseCommand;
 
-public abstract class ModuleCommand extends BaseCommand {
-    private final Module module;
+public abstract class ModuleCommand<M extends Module> extends BaseCommand {
+    private final M module;
 
-    protected ModuleCommand(Module module) {
+    /**
+     * Construct a command and auto register module contexts
+     * @param module
+     */
+    protected ModuleCommand(M module) {
         super();
         this.module = module;
+        @SuppressWarnings("unchecked")
+        Class<M> moduleClass = (Class<M>) module.getClass();
+        this.module.getPlugin().getCommandManager().getCommandContexts().<M>registerIssuerOnlyContext(moduleClass, (s)->(M)module);
+        
     }
 
-    public Module getModule() {
+    public M getModule() {
         return module;
     }
 

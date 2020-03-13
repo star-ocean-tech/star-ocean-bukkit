@@ -60,10 +60,10 @@ public class MarketManager {
                 }
             }
             if (record.getItem().getAmount() - amount <= 0) {
-                market.getStorage().removeRecord(record);
+                market.getPlugin().newTaskChain().async(()->market.getStorage().removeRecord(record)).execute();
             } else {
                 record.getItem().setAmount(record.getItem().getAmount() - amount);
-                market.getStorage().updateRecord(record);
+                market.getPlugin().newTaskChain().async(()->market.getStorage().updateRecord(record)).execute();
             }
             ItemStack result = record.getItem().clone();
             result.setAmount(amount);

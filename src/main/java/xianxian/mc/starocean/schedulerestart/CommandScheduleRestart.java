@@ -1,7 +1,5 @@
 package xianxian.mc.starocean.schedulerestart;
 
-import java.util.Arrays;
-
 import org.bukkit.command.CommandSender;
 
 import co.aikar.commands.annotation.CommandAlias;
@@ -12,13 +10,11 @@ import net.md_5.bungee.api.ChatColor;
 import xianxian.mc.starocean.ModuleCommand;
 
 @CommandAlias("srestart")
-public class CommandScheduleRestart extends ModuleCommand {
+public class CommandScheduleRestart extends ModuleCommand<ScheduleRestart> {
     private ScheduleRestart module;
 
     protected CommandScheduleRestart(ScheduleRestart module) {
         super(module);
-        this.module = module;
-        this.module.getPlugin().getCommandManager().getCommandContexts().registerContext(ScheduleRestart.class, (s)->module);
     }
     
     @Default 
