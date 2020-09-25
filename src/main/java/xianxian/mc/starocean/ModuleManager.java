@@ -1,12 +1,12 @@
 package xianxian.mc.starocean;
 
+import xianxian.mc.starocean.Module.ModuleState;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-
-import xianxian.mc.starocean.Module.ModuleState;
 
 public class ModuleManager {
     private List<Module> loadOrdered;
@@ -47,7 +47,6 @@ public class ModuleManager {
                     modulesToRemove.add(module);
                     module.setState(ModuleState.ERROR_TO_LOAD);
                 }
-
             } catch (Exception e) {
                 logger.severe("Unable to load " + module);
                 e.printStackTrace();

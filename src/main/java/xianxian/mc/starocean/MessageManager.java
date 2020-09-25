@@ -1,13 +1,12 @@
 package xianxian.mc.starocean;
 
-import java.util.List;
-
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+
+import java.util.List;
 
 public abstract class MessageManager {
 

@@ -4,31 +4,25 @@ buildscript {
     }
     dependencies {
         classpath "com.github.jengelman.gradle.plugins:shadow:5.1.0"
-  }
+    }
 }
 
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'java'
 apply plugin: 'eclipse'
+apply plugin: 'idea'
 
 repositories {
     // Use jcenter for resolving your dependencies.
     // You can declare any Maven/Ivy/file repository here.
     mavenLocal()
     //maven { url 'https://raw.github.com/StarOceanMC/Maven/repo' }
-    //maven { url 'https://raw.github.com/FabioZumbi12/UltimateChat/mvn-repo' }
     maven { url 'http://maven.aliyun.com/repository/gradle-plugin' }
     maven { url 'http://maven.aliyun.com/repository/central' } //mavenCentral()
     maven { url 'http://maven.aliyun.com/repository/jcenter' } //jcenter()
     maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots' } //spigot offical repository 
     maven { url 'https://hub.spigotmc.org/nexus/content/repositories/sonatype-nexus-snapshots/' }
-    maven { url 'https://repo.codemc.org/repository/maven-public' }
-    maven { url 'http://repo.extendedclip.com/content/repositories/placeholderapi' }
-    maven { url 'https://raw.github.com/PyvesB/AdvancedAchievements/mvn-repo/' }
-    maven { url 'https://maven.enginehub.org/repo/' }
-    maven { url 'https://jitpack.io' }
     maven { url 'https://repo.aikar.co/content/groups/aikar/' }
-    maven { url 'https://jenkins.mtorus.cz/plugin/repository/everything/' }    
 }
 
 dependencies {
@@ -36,36 +30,11 @@ dependencies {
     //implementation 'com.google.guava:guava:27.0.1-jre'
     
     compileOnly group: 'xianxian.mc.nebula', name: 'nebula-api', version: '1.15.2-R0.1-SNAPSHOT'
-    compileOnly group: 'de.tr7zw', name: 'item-nbt-api-plugin', version: '2.1.0'
-    // https://mvnrepository.com/artifact/com.zaxxer/HikariCP
-    compileOnly group: 'mysql', name: 'mysql-connector-java', version: '8.0.17'
-    compileOnly group: 'com.zaxxer', name: 'HikariCP', version: '3.4.1'
-    compileOnly group: 'me.lucko.luckperms', name: 'luckperms-api', version: '4.4'
-    compileOnly group: 'apache-httpclient', name: 'commons-httpclient', version: '3.1'
-    compileOnly group: 'me.clip', name: 'placeholderapi', version: '2.10.4'
-    compileOnly group: 'com.hm.achievement', name: 'advanced-achievements-api', version: '1.2.0'
-    //compileOnly group: 'com.sk89q.worldedit', name: 'worldedit-bukkit', version: '7.0.1-SNAPSHOT'
-    compileOnly (group: 'com.sk89q.worldguard', name: 'worldguard-bukkit', version: '7.0.1') {
-        exclude group: 'org.bukkit'
-    }
-    compileOnly fileTree('libs')
-    compileOnly (group: 'com.github.MilkBowl', name: 'VaultAPI', version: '1.7') {
-        exclude group: 'org.bukkit'
-    }
-    //compileOnly group: 'br.net.fabiozumbi12.UltimateChat', name: 'UltimateChat-Spigot', version: '1.8.9'
-    compile group: 'com.cedarsoft.serialization', name: 'jdom', version: '1.0.3'
-    compile group: 'commons-io', name: 'commons-io', version: '2.4'
-    compile group: 'commons-lang', name: 'commons-lang', version: '2.5'
-    compile group: 'commons-logging', name: 'commons-logging', version: '1.2'
-    compile group: 'commons-codec', name: 'commons-codec', version: '1.9'
-    //compile group: 'com.electronwill.night-config', name: 'core', version: '3.6.2'
-    //compile group: 'com.electronwill.night-config', name: 'toml', version: '3.6.2'
-    compile fileTree('libs-n')
-    compile group: 'org.java-websocket', name: 'Java-WebSocket', version: '1.4.0'
+    compileOnly group: 'org.jetbrains', name: 'annotations', version: '18.0.0'
+    compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.17'
+    compile group: 'com.zaxxer', name: 'HikariCP', version: '3.4.1'
     compile group: 'co.aikar', name: 'taskchain-bukkit', version: '3.7.2'
     compile group: 'co.aikar', name: 'acf-paper', version: '0.5.0-SNAPSHOT'
-    //compileOnly group: 'org.screamingsandals.bedwars', name: 'BedWars-API', version: '0.2.6-SNAPSHOT'
-    compile group: 'misat11.lib.sgui', name: 'SimpleGuiFormat', version: '0.0.10-snap7'
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -74,18 +43,12 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 
 shadowJar {
     classifier = null
-    transform(com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer)
 
-    exclude 'META-INF/*.DSA'
-    exclude 'META-INF/*.RSA'
-
-    relocate 'org.apache', 'xianxian.mc.libs.apache'
-    relocate 'com.zaxxer.hikari', 'xianxian.mc.libs.hikari'
-    relocate 'com.cedarsoft', 'xianxian.mc.libs.cedarsoft'
-    relocate 'com.mysql', 'xianxian.mc.libs.mysql'
-    relocate 'com.eastrobot.ask', 'xianxian.mc.libs.xiaoi.sdk'
-    relocate 'org.slf4j', 'xianxian.mc.libs.slf4j'
-    relocate 'org.java_websocket', 'xianxian.mc.libs.websocket'
-    relocate 'org.jdom', 'xianxian.mc.libs.jdom'
-    relocate 'misat11.lib.sgui', 'xianxian.mc.libs.sgui'
+    relocate 'io.netty', 'xianxian.mc.starocean.libs.netty'
+    relocate 'com.google.protobuf', 'xianxian.mc.starocean.libs.protobuf'
+    relocate 'org.sqlite', 'xianxian.mc.starocean.libs.sqlite'
+    relocate 'google', 'xianxian.mc.starocean.libs.protobuf.google'
+    relocate 'com.mysql', 'xianxian.mc.starocean.libs.mysql'
+    relocate 'com.zaxxer.hikari', 'xianxian.mc.starocean.libs.hikari'
+    relocate 'org.slf4j', 'xianxian.mc.starocean.libs.slf4j'
 }

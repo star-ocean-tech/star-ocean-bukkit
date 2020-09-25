@@ -1,10 +1,9 @@
 package xianxian.mc.starocean;
 
-import org.bukkit.plugin.java.JavaPlugin;
-
 import co.aikar.commands.BukkitCommandManager;
 import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
+import org.bukkit.plugin.java.JavaPlugin;
 import xianxian.mc.starocean.gui.GUIManager;
 
 public abstract class AbstractPlugin extends JavaPlugin {

@@ -1,13 +1,11 @@
 package xianxian.mc.starocean.gui;
 
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Table;
-
 import xianxian.mc.starocean.Module;
 import xianxian.mc.starocean.gui.view.View;
 

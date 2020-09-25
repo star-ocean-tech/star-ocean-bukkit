@@ -1,11 +1,10 @@
 package xianxian.mc.starocean;
 
-import java.sql.Connection;
-
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-
 import xianxian.mc.starocean.DatabaseManager.Database;
+
+import java.sql.Connection;
 
 public class DatabaseConnectedEvent extends Event {
     private static final HandlerList handlerList = new HandlerList();

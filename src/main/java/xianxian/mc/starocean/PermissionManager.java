@@ -1,11 +1,11 @@
 package xianxian.mc.starocean;
 
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
-
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 public class PermissionManager {
     private final AbstractPlugin plugin;

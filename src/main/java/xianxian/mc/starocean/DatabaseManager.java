@@ -1,20 +1,19 @@
 package xianxian.mc.starocean;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import org.apache.commons.lang.Validate;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
 import java.util.logging.Logger;
 
-import org.apache.commons.lang.Validate;
-
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
-
 public class DatabaseManager {
-    private Executor watchdogThreadPool = Executors.newFixedThreadPool(2);
+    private ExecutorService watchdogThreadPool = Executors.newFixedThreadPool(2);
     private Database database;
     private HikariConfig prevConfig;
     private HikariDataSource dataSource;
@@ -61,6 +60,7 @@ public class DatabaseManager {
             this.database.connection.close();
         if (dataSource != null && dataSource.isClosed())
             this.dataSource.close();
+        this.watchdogThreadPool.shutdown();
     }
 
     public Database getDatabase() {
@@ -111,8 +111,8 @@ public class DatabaseManager {
         public void run() {
             try {
                 while (!connection.isClosed()) {
-                    Thread.sleep(30000);
                     checkStatement.execute();
+                    Thread.sleep(30000);
                 }
                 exit();
             } catch (Exception e) {

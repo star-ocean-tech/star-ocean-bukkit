@@ -1,16 +1,15 @@
 package xianxian.mc.starocean;
 
+import com.google.common.io.Files;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 import java.util.logging.Logger;
-
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-
-import com.google.common.io.Files;
 
 public abstract class Module {
     protected final AbstractPlugin plugin;

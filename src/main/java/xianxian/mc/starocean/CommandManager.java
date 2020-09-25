@@ -1,10 +1,10 @@
 package xianxian.mc.starocean;
 
-import java.lang.reflect.Field;
-import java.util.logging.Logger;
-
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
+
+import java.lang.reflect.Field;
+import java.util.logging.Logger;
 
 @Deprecated
 public class CommandManager {

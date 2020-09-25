@@ -1,47 +1,50 @@
 package xianxian.mc.starocean;
 
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.logging.Logger;
-import java.util.regex.Pattern;
-
+import co.aikar.commands.BukkitCommandManager;
+import co.aikar.commands.PaperCommandManager;
+import co.aikar.taskchain.BukkitTaskChainFactory;
+import co.aikar.taskchain.TaskChainFactory;
+import com.google.common.collect.Lists;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.ServerCommandEvent;
-
-import com.google.common.collect.Lists;
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
-
-import co.aikar.commands.BukkitCommandManager;
-import co.aikar.commands.PaperCommandManager;
-import co.aikar.taskchain.BukkitTaskChainFactory;
-import co.aikar.taskchain.TaskChainFactory;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
 import xianxian.mc.starocean.gui.GUIManager;
 
-public class StarOcean extends AbstractPlugin {
-    public static StarOcean INSTANCE;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Objects;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+public class StarOcean extends AbstractPlugin {
+    @Deprecated
+    public static StarOcean INSTANCE;
+    @Deprecated
     private static Logger logger;
+
     private static Connection connection;
     private static HikariDataSource dataSource;
 
-    private static final Pattern checkModuleNamePattern = Pattern.compile("^[A-Za-z0-9\\.\\$]+$");
+    private static final Pattern checkModuleNamePattern = Pattern.compile("^[A-Za-z0-9\\.\\$_]+$");
 
     private ModuleManager moduleManager = new ModuleManager(this);
     private PermissionManager permissionManager = new PermissionManager(this);
@@ -53,11 +56,30 @@ public class StarOcean extends AbstractPlugin {
     
     private File messagerFile;
     private FileConfiguration messagerConfig;
+    private URLClassLoader addonsClassLoader;
 
     @Override
     public void onLoad() {
         super.onLoad();
         logger = getLogger();
+
+        File addonsFile = new File(getDataFolder(), "addons");
+        if (!addonsFile.exists())
+            addonsFile.mkdirs();
+        try {
+            URL[] urls = Files.list(addonsFile.toPath()).filter((path) -> path.toString().toLowerCase().endsWith(".jar")).map((path) -> {
+                try {
+                    return path.toAbsolutePath().toUri().toURL();
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }).filter(Objects::nonNull).toArray(URL[]::new);
+            getLogger().info(urls.length + " addons found");
+            addonsClassLoader = new URLClassLoader(urls, this.getClassLoader());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -70,9 +92,6 @@ public class StarOcean extends AbstractPlugin {
         INSTANCE = this;
         
         guiManager.prepare();
-        
-        if (!this.getDataFolder().exists())
-            this.getDataFolder().mkdirs();
 
         this.versionMatcher.match();
         
@@ -122,12 +141,9 @@ public class StarOcean extends AbstractPlugin {
     private void discoverModules() {
         File enabledModulesFile = new File(getDataFolder(), "xianxian.mc.starocean.EnabledModules");
         if (!enabledModulesFile.exists()) {
-            logger().severe("Unable to find xianxian.mc.starocean.EnabledModules, creating new with all modules");
+            logger().severe("Unable to find xianxian.mc.starocean.EnabledModules, creating new");
             try {
                 enabledModulesFile.createNewFile();
-                List<String> defaultModules = new ArrayList<String>();
-                //Arrays.stream(Modules.values()).forEach((m) -> defaultModules.add(m.className()));
-                Files.write(enabledModulesFile.toPath(), defaultModules, StandardOpenOption.WRITE);
 
             } catch (IOException e1) {
             }
@@ -148,7 +164,7 @@ public class StarOcean extends AbstractPlugin {
                 }
                 try {
                     logger().info("Discovered module " + moduleName);
-                    Class<?> clazz = Class.forName(moduleName);
+                    Class<?> clazz = addonsClassLoader.loadClass(moduleName);
                     Class<? extends Module> moduleClass = clazz.asSubclass(Module.class);
                     Constructor<? extends Module> moduleConstructor = moduleClass.getConstructor(AbstractPlugin.class);
                     Module module = moduleConstructor.newInstance((AbstractPlugin) this);
@@ -163,7 +179,7 @@ public class StarOcean extends AbstractPlugin {
                 } catch (ClassCastException e) {
                     e.printStackTrace();
                     logger().severe("Module " + moduleName
-                            + " isn't a sub class of xianxian.mc.starocean.IModule, spelling mistake or hacking?");
+                            + " isn't a sub class of xianxian.mc.starocean.Module, spelling mistake or hacking?");
                 } catch (InstantiationException e) {
                     e.printStackTrace();
                     logger().severe("Unable to create instance of Module " + moduleName + ", isn't a valid class?");
@@ -188,10 +204,6 @@ public class StarOcean extends AbstractPlugin {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public static Connection getDatabaseConnection() {
-        return connection;
     }
 
     @Override
@@ -225,10 +237,12 @@ public class StarOcean extends AbstractPlugin {
         return commandManager;
     }
 
+    @Deprecated
     public static StarOcean getInstance() {
         return INSTANCE;
     }
 
+    @Deprecated
     public static Logger logger() {
         return logger;
     }
