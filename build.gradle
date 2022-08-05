@@ -1,25 +1,20 @@
 buildscript {
     repositories {
-        maven { url "http://maven.aliyun.com/repository/gradle-plugin" }
-    }
-    dependencies {
-        classpath "com.github.jengelman.gradle.plugins:shadow:5.1.0"
+        maven { url "https://maven.aliyun.com/repository/gradle-plugin" }
     }
 }
 
-apply plugin: 'com.github.johnrengelman.shadow'
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
+plugins {
+    id('java')
+    id('com.github.johnrengelman.shadow') version '7.1.2'
+}
 
 repositories {
     // Use jcenter for resolving your dependencies.
     // You can declare any Maven/Ivy/file repository here.
     mavenLocal()
-    //maven { url 'https://raw.github.com/StarOceanMC/Maven/repo' }
-    maven { url 'http://maven.aliyun.com/repository/gradle-plugin' }
-    maven { url 'http://maven.aliyun.com/repository/central' } //mavenCentral()
-    maven { url 'http://maven.aliyun.com/repository/jcenter' } //jcenter()
+    maven { url 'https://maven.aliyun.com/repository/central' } //mavenCentral()
+    maven { url 'https://maven.aliyun.com/repository/jcenter' } //jcenter()
     maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots' } //spigot offical repository 
     maven { url 'https://hub.spigotmc.org/nexus/content/repositories/sonatype-nexus-snapshots/' }
     maven { url 'https://repo.aikar.co/content/groups/aikar/' }
@@ -31,18 +26,14 @@ dependencies {
     
     compileOnly group: 'xianxian.mc.nebula', name: 'nebula-api', version: '1.15.2-R0.1-SNAPSHOT'
     compileOnly group: 'org.jetbrains', name: 'annotations', version: '18.0.0'
-    compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.17'
-    compile group: 'com.zaxxer', name: 'HikariCP', version: '3.4.1'
-    compile group: 'co.aikar', name: 'taskchain-bukkit', version: '3.7.2'
-    compile group: 'co.aikar', name: 'acf-paper', version: '0.5.0-SNAPSHOT'
-}
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-    from sourceSets.main.allSource
+    implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.17'
+    implementation group: 'com.zaxxer', name: 'HikariCP', version: '3.4.1'
+    implementation group: 'co.aikar', name: 'taskchain-bukkit', version: '3.7.2'
+    implementation group: 'co.aikar', name: 'acf-paper', version: '0.5.0-SNAPSHOT'
 }
 
 shadowJar {
-    classifier = null
+    archiveClassifier.set(null)
 
     relocate 'io.netty', 'xianxian.mc.starocean.libs.netty'
     relocate 'com.google.protobuf', 'xianxian.mc.starocean.libs.protobuf'
@@ -51,4 +42,29 @@ shadowJar {
     relocate 'com.mysql', 'xianxian.mc.starocean.libs.mysql'
     relocate 'com.zaxxer.hikari', 'xianxian.mc.starocean.libs.hikari'
     relocate 'org.slf4j', 'xianxian.mc.starocean.libs.slf4j'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = project.group
+            artifactId = project.name
+            version = project.version
+
+            from components.java
+
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+        }
+    }
+
+    repositories {
+        mavenLocal()
+    }
 }

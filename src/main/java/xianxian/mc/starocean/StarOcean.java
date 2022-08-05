@@ -263,7 +263,7 @@ public class StarOcean extends AbstractPlugin {
         @EventHandler
         public void onServerCommand(ServerCommandEvent event) {
             if (event.getSender() instanceof ConsoleCommandSender)
-                commandLogger.info(event.getSender().getName() + " issued server command: /" + event.getCommand());
+                // commandLogger.info(event.getSender().getName() + " issued server command: /" + event.getCommand());
         }
 
         @Override
