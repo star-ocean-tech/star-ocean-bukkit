@@ -47,6 +47,10 @@ public abstract class Module {
      */
     public abstract void reload();
 
+    public void earlyLoad() {
+
+    }
+
     public String getModuleName() {
         return name;
     }
@@ -156,6 +160,8 @@ public abstract class Module {
     }
 
     public enum ModuleState {
-        NEW, PREPARED, ERROR_TO_LOAD
+        NEW, LOADED, PREPARED, ERROR_TO_LOAD;
+
+
     }
 }

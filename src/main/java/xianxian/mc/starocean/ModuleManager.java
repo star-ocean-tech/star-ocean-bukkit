@@ -2,10 +2,7 @@ package xianxian.mc.starocean;
 
 import xianxian.mc.starocean.Module.ModuleState;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class ModuleManager {
@@ -33,22 +30,35 @@ public class ModuleManager {
         this.loadedModules.put(className, module);
     }
 
-    public void prepare() {
-        List<Module> modulesToRemove = new ArrayList<Module>();
+    public void earlyLoad() {
 
         for (Module module : loadOrdered) {
             try {
                 if (module.checkIfCanLoad()) {
-                    logger.info("Preparing module " + module);
-                    module.prepare();
-                    module.setState(ModuleState.PREPARED);
+                    logger.info("Early loading module " + module);
+                    module.earlyLoad();
+                    module.setState(ModuleState.LOADED);
                 } else {
                     logger.severe("Module " + module + " refused to load");
-                    modulesToRemove.add(module);
                     module.setState(ModuleState.ERROR_TO_LOAD);
                 }
             } catch (Exception e) {
                 logger.severe("Unable to load " + module);
+                e.printStackTrace();
+                module.setState(ModuleState.ERROR_TO_LOAD);
+            }
+        }
+    }
+
+    public void prepare() {
+
+        for (Module module : loadOrdered) {
+            try {
+                logger.info("Preparing module " + module);
+                module.prepare();
+                module.setState(ModuleState.PREPARED);
+            } catch (Exception e) {
+                logger.severe("Unable to prepare " + module);
                 e.printStackTrace();
                 module.setState(ModuleState.ERROR_TO_LOAD);
             }
@@ -75,11 +85,13 @@ public class ModuleManager {
     }
 
     public boolean isModuleLoaded(String className) {
-        return loadedModules.containsKey(className);
+        Module module = loadedModules.get(className);
+        return module != null && module.getState() != ModuleState.ERROR_TO_LOAD;
     }
 
     public <T extends Module> boolean isModuleLoaded(Class<T> moduleClass) {
-        return loadedModules.containsKey(moduleClass.getCanonicalName());
+        Module module = loadedModules.get(moduleClass.getCanonicalName());
+        return module != null && module.getState() != ModuleState.ERROR_TO_LOAD;
     }
 
     public Module getLoadedModule(String className) {

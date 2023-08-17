@@ -8,6 +8,9 @@ import com.google.common.collect.Lists;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.JoinConfiguration;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -16,6 +19,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.server.ServerCommandEvent;
 import xianxian.mc.starocean.gui.GUIManager;
 
@@ -81,6 +85,29 @@ public class StarOcean extends AbstractPlugin {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        messagerFile = new File(getDataFolder(), "messager.yml");
+        if (!messagerFile.exists())
+            try {
+                messagerFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        messagerConfig = YamlConfiguration.loadConfiguration(messagerFile);
+
+        try {
+            messagerConfig.save(messagerFile);
+        } catch (IOException e3) {
+            e3.printStackTrace();
+        }
+
+        StarOceanModule staroceanModule = new StarOceanModule(this);
+        this.moduleManager.addModule("xianxian.mc.starocean.StarOcean$StarOceanModule", staroceanModule);
+        staroceanModule.setMessager(new DefaultMessager(this, staroceanModule));
+
+        discoverModules();
+
+        moduleManager.earlyLoad();
     }
 
     @Override
@@ -95,25 +122,6 @@ public class StarOcean extends AbstractPlugin {
         guiManager.prepare();
 
         this.versionMatcher.match();
-        
-        messagerFile = new File(getDataFolder(), "messager.yml");
-        if (!messagerFile.exists())
-            try {
-                messagerFile.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        messagerConfig = YamlConfiguration.loadConfiguration(messagerFile);
-        discoverModules();
-        try {
-            messagerConfig.save(messagerFile);
-        } catch (IOException e3) {
-            e3.printStackTrace();
-        }
-
-        StarOceanModule staroceanModule = new StarOceanModule(this);
-        this.moduleManager.addModule("xianxian.mc.starocean.StarOcean$StarOceanModule", staroceanModule);
-        staroceanModule.setMessager(new DefaultMessager(this, staroceanModule));
 
         moduleManager.prepare();
 
@@ -262,6 +270,15 @@ public class StarOcean extends AbstractPlugin {
         }
 
         @EventHandler
+        public void onPlayerJoin(PlayerJoinEvent event) {
+            if (!event.getPlayer().hasPlayedBefore()) {
+                getMessager().broadcastMessage(Component.join(JoinConfiguration.noSeparators(), Component.text("欢迎新玩家", NamedTextColor.LIGHT_PURPLE, TextDecoration.BOLD),
+                        event.getPlayer().displayName(),
+                        Component.text("加入星海=v=", NamedTextColor.LIGHT_PURPLE, TextDecoration.BOLD)));
+            }
+        }
+
+        @EventHandler
         public void onServerCommand(ServerCommandEvent event) {
             if (event.getSender() instanceof ConsoleCommandSender)
                 return;
@@ -312,12 +329,7 @@ public class StarOcean extends AbstractPlugin {
         }
 
         @Override
-        protected BaseComponent getPrefix() {
-            return new TextComponent(prefix);
-        }
-
-        @Override
-        protected Component getPrefixComponent() {
+        protected Component getPrefix() {
             return Component.text(prefix);
         }
 

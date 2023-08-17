@@ -1,10 +1,12 @@
 package xianxian.mc.starocean;
 
 import co.aikar.commands.annotation.*;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.LinearComponents;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
 import xianxian.mc.starocean.StarOcean.StarOceanModule;
@@ -28,32 +30,32 @@ public class CommandStarOcean extends ModuleCommand<StarOceanModule> {
     @Default
     @Subcommand("list")
     public static void list(CommandSender sender, @Default StarOceanModule module) {
-        module.getMessager().sendMessageTo(sender,
-                new TextComponent(ChatColor.YELLOW + "小星是服务器的专属机器人，所以StarOcean也是服务器的专属插件哦"));
+        module.getMessager().sendMessageTo(sender, "小星是服务器的专属机器人，所以StarOcean也是服务器的专属插件哦");
         if (sender.hasPermission("starocean.listmodules")) {
-            module.getMessager().sendMessageTo(sender, new TextComponent("服务器已加载的模块:"));
+            module.getMessager().sendMessageTo(sender, "服务器已加载的模块:");
             module.getPlugin().getModuleManager().getLoadedModules().forEach((m) -> {
-                TextComponent desc = new TextComponent(ChatColor.AQUA + m.getModuleName()
-                        + (m.getDescription().isEmpty() ? "" : ": " + m.getDescription()));
+                Component desc = Component.text(m.getModuleName()
+                        + (m.getDescription().isEmpty() ? "" : ": " + m.getDescription()), NamedTextColor.AQUA);
+
                 if (m.getState().equals(Module.ModuleState.ERROR_TO_LOAD)) {
-                    TextComponent line = new TextComponent(ChatColor.RED + m.getIdentifiedName());
-                    line.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, new BaseComponent[] { desc }));
+                    Component line = Component.text(m.getIdentifiedName(), NamedTextColor.RED);
+                    line.hoverEvent(HoverEvent.showText(desc));
                     module.getMessager().sendMessageTo(sender,
-                            new TextComponent(new TextComponent("    >>>> "), line));
+                            LinearComponents.linear(Component.text("    >>>> "), line));
                 } else if (m.getState().equals(Module.ModuleState.PREPARED)) {
-                    TextComponent line = new TextComponent(ChatColor.GREEN + m.getIdentifiedName());
-                    line.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, new BaseComponent[] { desc }));
+                    Component line = Component.text(m.getIdentifiedName(), NamedTextColor.GREEN);
+                    line.hoverEvent(HoverEvent.showText(desc));
                     module.getMessager().sendMessageTo(sender,
-                            new TextComponent(new TextComponent("    >>>> "), line));
+                            LinearComponents.linear(Component.text("    >>>> "), line));
                 } else {
-                    TextComponent line = new TextComponent(ChatColor.GRAY + m.getIdentifiedName());
-                    line.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, new BaseComponent[] { desc }));
+                    Component line = Component.text(m.getIdentifiedName(), NamedTextColor.GRAY);
+                    line.hoverEvent(HoverEvent.showText(desc));
                     module.getMessager().sendMessageTo(sender,
-                            new TextComponent(new TextComponent("    >>>> "), line));
+                            LinearComponents.linear(Component.text("    >>>> "), line));
                 }
             });
         } else {
-            module.getMessager().sendMessageTo(sender, new TextComponent(ChatColor.RED + "你无权知道小星有什么功能哦"));
+            module.getMessager().sendMessageTo(sender, Component.text("你好呀^_^", NamedTextColor.AQUA));
         }
     }
     
@@ -67,20 +69,17 @@ public class CommandStarOcean extends ModuleCommand<StarOceanModule> {
             if (m.getModuleName().equalsIgnoreCase(moduleName)) {
                 try {
                     m.reload();
-                    module.getMessager().sendMessageTo(sender,
-                            new TextComponent(ChatColor.GREEN + "已重载模块" + moduleName));
+                    module.getMessager().sendMessageTo(sender, Component.text("已重载模块" + moduleName, NamedTextColor.GREEN));
                     isActionPerformed.set(true);
                 } catch (Exception e) {
-                    module.getMessager().sendMessageTo(sender,
-                            new TextComponent(ChatColor.RED + "无法重载模块" + moduleName));
+                    module.getMessager().sendMessageTo(sender, Component.text("无法重载模块" + moduleName, NamedTextColor.RED));
                     e.printStackTrace();
                     isActionPerformed.set(true);
                 }
             }
         });
         if (!isActionPerformed.get()) {
-            module.getMessager().sendMessageTo(sender,
-                    new TextComponent(ChatColor.RED + "找不到模块" + moduleName));
+            module.getMessager().sendMessageTo(sender, Component.text("找不到模块" + moduleName, NamedTextColor.RED));
         }
     }
 }
