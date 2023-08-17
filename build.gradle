@@ -6,6 +6,7 @@ buildscript {
 
 plugins {
     id('java')
+    id('maven-publish')
     id('com.github.johnrengelman.shadow') version '7.1.2'
 }
 
@@ -24,7 +25,8 @@ dependencies {
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     //implementation 'com.google.guava:guava:27.0.1-jre'
     
-    compileOnly group: 'xianxian.mc.nebula', name: 'nebula-api', version: '1.15.2-R0.1-SNAPSHOT'
+    compileOnly group: 'org.staroceanmc.nebula', name: 'nebula-api', version: '1.20.1-R0.1-SNAPSHOT'
+    // compileOnly group: 'xianxian.mc.nebula', name: 'nebula-api', version: '1.15.2-R0.1-SNAPSHOT'
     compileOnly group: 'org.jetbrains', name: 'annotations', version: '18.0.0'
     implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.17'
     implementation group: 'com.zaxxer', name: 'HikariCP', version: '3.4.1'
@@ -33,7 +35,7 @@ dependencies {
 }
 
 shadowJar {
-    archiveClassifier.set(null)
+    archiveClassifier.set("dist")
 
     relocate 'io.netty', 'xianxian.mc.starocean.libs.netty'
     relocate 'com.google.protobuf', 'xianxian.mc.starocean.libs.protobuf'
@@ -43,6 +45,17 @@ shadowJar {
     relocate 'com.zaxxer.hikari', 'xianxian.mc.starocean.libs.hikari'
     relocate 'org.slf4j', 'xianxian.mc.starocean.libs.slf4j'
 }
+
+tasks.withType(JavaCompile) {
+    options.encoding ='UTF-8'
+}
+
+def gitCommitVersion() {
+    def cmd = 'git rev-list HEAD --abbrev-commit --max-count=1'
+    cmd.execute().text.trim()
+}
+
+project.version = project.version + "+" + gitCommitVersion()
 
 publishing {
     publications {
@@ -68,3 +81,6 @@ publishing {
         mavenLocal()
     }
 }
+
+sourceCompatibility = 17
+targetCompatibility = 17

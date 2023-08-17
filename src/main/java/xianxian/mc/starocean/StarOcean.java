@@ -7,6 +7,7 @@ import co.aikar.taskchain.TaskChainFactory;
 import com.google.common.collect.Lists;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -263,6 +264,7 @@ public class StarOcean extends AbstractPlugin {
         @EventHandler
         public void onServerCommand(ServerCommandEvent event) {
             if (event.getSender() instanceof ConsoleCommandSender)
+                return;
                 // commandLogger.info(event.getSender().getName() + " issued server command: /" + event.getCommand());
         }
 
@@ -302,7 +304,7 @@ public class StarOcean extends AbstractPlugin {
             if (plugin.messagerConfig.isString(this.module.getModuleName().toLowerCase())) {
                 prefix = plugin.messagerConfig.getString(module.getModuleName().toLowerCase());
             } else {
-                prefix = ChatColor.DARK_GRAY + "|" + ChatColor.BLUE + ChatColor.BOLD + "小星" + ChatColor.DARK_GRAY
+                prefix = ChatColor.DARK_GRAY + "|" + ChatColor.AQUA + ChatColor.BOLD + "小星" + ChatColor.DARK_GRAY
                         + "| >> " + ChatColor.RESET;
                 plugin.messagerConfig.set(this.module.getModuleName().toLowerCase(), prefix);
             }
@@ -310,8 +312,13 @@ public class StarOcean extends AbstractPlugin {
         }
 
         @Override
-        protected List<BaseComponent> getPrefix() {
-            return Lists.newArrayList(new TextComponent(prefix));
+        protected BaseComponent getPrefix() {
+            return new TextComponent(prefix);
+        }
+
+        @Override
+        protected Component getPrefixComponent() {
+            return Component.text(prefix);
         }
 
     }

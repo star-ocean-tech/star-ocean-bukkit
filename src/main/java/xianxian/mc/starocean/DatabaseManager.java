@@ -2,7 +2,6 @@ package xianxian.mc.starocean;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.commons.lang.Validate;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -80,7 +79,6 @@ public class DatabaseManager {
         private Connection connection;
 
         public Database(Connection connection) {
-            Validate.notNull(connection, "Connection can't be null");
             this.connection = connection;
         }
 
