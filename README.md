@@ -1,2 +1,2 @@
 # StarOcean
-星海服务器的专用插件
+A plugin with addon loader and basic framework for development, designed for Star Ocean.
