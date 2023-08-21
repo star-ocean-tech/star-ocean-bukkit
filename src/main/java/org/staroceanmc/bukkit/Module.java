@@ -1,4 +1,4 @@
-package xianxian.mc.starocean;
+package org.staroceanmc.bukkit;
 
 import com.google.common.io.Files;
 import org.bukkit.configuration.file.FileConfiguration;

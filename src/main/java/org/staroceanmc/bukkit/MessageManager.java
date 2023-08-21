@@ -1,15 +1,10 @@
-package xianxian.mc.starocean;
+package org.staroceanmc.bukkit;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-
-import java.util.Arrays;
 
 public abstract class MessageManager {
 

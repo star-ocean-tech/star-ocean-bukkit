@@ -1,4 +1,4 @@
-package xianxian.mc.starocean.gui.view;
+package org.staroceanmc.bukkit.gui.view;
 
 import org.bukkit.event.inventory.InventoryClickEvent;
 

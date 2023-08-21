@@ -1,23 +1,19 @@
-package xianxian.mc.starocean;
+package org.staroceanmc.bukkit;
 
 import co.aikar.commands.annotation.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.LinearComponents;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
-import xianxian.mc.starocean.StarOcean.StarOceanModule;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @CommandAlias("starocean")
-public class CommandStarOcean extends ModuleCommand<StarOceanModule> {
+public class CommandStarOcean extends ModuleCommand<StarOcean.StarOceanModule> {
 
-    protected CommandStarOcean(StarOceanModule module) {
+    protected CommandStarOcean(StarOcean.StarOceanModule module) {
         super(module);
         module.getPlugin().getCommandManager().getCommandCompletions().registerCompletion("modules", (c)->
             module.getPlugin().getModuleManager().getLoadedModules()
@@ -29,7 +25,7 @@ public class CommandStarOcean extends ModuleCommand<StarOceanModule> {
     
     @Default
     @Subcommand("list")
-    public static void list(CommandSender sender, @Default StarOceanModule module) {
+    public static void list(CommandSender sender, @Default StarOcean.StarOceanModule module) {
         module.getMessager().sendMessageTo(sender, "小星是服务器的专属机器人，所以StarOcean也是服务器的专属插件哦");
         if (sender.hasPermission("starocean.listmodules")) {
             module.getMessager().sendMessageTo(sender, "服务器已加载的模块:");
@@ -63,7 +59,7 @@ public class CommandStarOcean extends ModuleCommand<StarOceanModule> {
     @Syntax("<module>")
     @CommandCompletion("@modules")
     @CommandPermission("starocean.reload")
-    public static void reload(CommandSender sender, StarOceanModule module, String moduleName) {
+    public static void reload(CommandSender sender, StarOcean.StarOceanModule module, String moduleName) {
         AtomicBoolean isActionPerformed = new AtomicBoolean(false);
         module.getPlugin().getModuleManager().getLoadedModules().forEach((m) -> {
             if (m.getModuleName().equalsIgnoreCase(moduleName)) {

@@ -1,4 +1,4 @@
-package xianxian.mc.starocean.gui;
+package org.staroceanmc.bukkit.gui;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
@@ -6,8 +6,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import xianxian.mc.starocean.Module;
-import xianxian.mc.starocean.gui.view.View;
+import org.staroceanmc.bukkit.Module;
+import org.staroceanmc.bukkit.gui.view.View;
 
 public abstract class GUI implements InventoryHolder {
     private final Module module;
@@ -27,7 +27,7 @@ public abstract class GUI implements InventoryHolder {
     public abstract void onCreate();
 
     /**
-     * Refresh the entire GUI
+     * Refresh the entire GUI. Regenerate all the items
      */
     public abstract void refresh();
 

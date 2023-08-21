@@ -1,6 +1,6 @@
-package xianxian.mc.starocean;
+package org.staroceanmc.bukkit;
 
-import xianxian.mc.starocean.Module.ModuleState;
+import org.staroceanmc.bukkit.Module.ModuleState;
 
 import java.util.*;
 import java.util.logging.Logger;

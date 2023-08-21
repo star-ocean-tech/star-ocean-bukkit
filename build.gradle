@@ -57,6 +57,8 @@ def gitCommitVersion() {
 
 project.version = project.version + "+" + gitCommitVersion()
 
+print("Current version: " + project.version)
+
 publishing {
     publications {
         mavenJava(MavenPublication) {

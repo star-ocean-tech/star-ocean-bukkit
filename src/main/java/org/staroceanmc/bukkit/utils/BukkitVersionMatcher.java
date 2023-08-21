@@ -1,6 +1,7 @@
-package xianxian.mc.starocean;
+package org.staroceanmc.bukkit.utils;
 
 import org.bukkit.Bukkit;
+import org.staroceanmc.bukkit.utils.ServerVersionMatcher;
 
 public class BukkitVersionMatcher extends ServerVersionMatcher {
     private String version;

@@ -1,4 +1,4 @@
-main: xianxian.mc.starocean.StarOcean
+main: org.staroceanmc.bukkit.StarOcean
 name: StarOcean
 version: '0.1'
 softdepend:

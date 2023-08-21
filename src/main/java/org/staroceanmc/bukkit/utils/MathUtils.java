@@ -1,4 +1,4 @@
-package xianxian.mc.starocean;
+package org.staroceanmc.bukkit.utils;
 
 import org.bukkit.Location;
 import org.bukkit.util.Vector;

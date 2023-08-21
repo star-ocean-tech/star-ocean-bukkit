@@ -1,8 +1,8 @@
-package xianxian.mc.starocean;
+package org.staroceanmc.bukkit;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import xianxian.mc.starocean.DatabaseManager.Database;
+import org.staroceanmc.bukkit.DatabaseManager.Database;
 
 import java.sql.Connection;
 

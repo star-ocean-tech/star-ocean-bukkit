@@ -1,4 +1,4 @@
-package xianxian.mc.starocean;
+package org.staroceanmc.bukkit;
 
 import co.aikar.commands.BaseCommand;
 

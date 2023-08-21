@@ -1,4 +1,4 @@
-package xianxian.mc.starocean.gui;
+package org.staroceanmc.bukkit.gui;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -10,7 +10,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent.Reason;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import xianxian.mc.starocean.AbstractPlugin;
+import org.staroceanmc.bukkit.AbstractPlugin;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -18,9 +18,11 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 public class GUIManager implements Listener {
-    private AbstractPlugin plugin;
-    private Map<Player, GUIStack> guiStacks = new HashMap<>();
-    private Logger logger;
+    private final AbstractPlugin plugin;
+    private final Map<Player, GUIStack> guiStacks = new HashMap<>();
+    private final Logger logger;
+    private final GuiActionListener listener = new GuiActionListener(this);
+
     
     public GUIManager(AbstractPlugin plugin) {
         this.plugin = plugin;
@@ -29,6 +31,19 @@ public class GUIManager implements Listener {
     
     public void prepare() {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        plugin.getServer().getPluginManager().registerEvents(listener, plugin);
+    }
+
+    public void closeAll(Player player) {
+
+    }
+
+    public void closeCurrent(Player player) {
+
+    }
+
+    public void click() {
+
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -130,7 +145,7 @@ public class GUIManager implements Listener {
                 GUI gui = (GUI) event.getInventory().getHolder();
                 gui.onPause();
                 
-                plugin.newTaskChain().async(()->gui.onDestroy()).execute();
+                plugin.newTaskChain().async(gui::onDestroy).execute();
             }
         }
     }

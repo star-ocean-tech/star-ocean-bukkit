@@ -1,4 +1,4 @@
-package xianxian.mc.starocean;
+package org.staroceanmc.bukkit;
 
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;

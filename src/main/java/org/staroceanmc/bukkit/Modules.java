@@ -1,4 +1,4 @@
-package xianxian.mc.starocean;
+package org.staroceanmc.bukkit;
 
 public enum Modules {
     RECORD_ITEM_FRAME("xianxian.mc.starocean.recorditemframe.RecordItemFrame"),

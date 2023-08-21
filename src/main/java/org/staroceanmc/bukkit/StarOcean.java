@@ -1,10 +1,9 @@
-package xianxian.mc.starocean;
+package org.staroceanmc.bukkit;
 
 import co.aikar.commands.BukkitCommandManager;
 import co.aikar.commands.PaperCommandManager;
 import co.aikar.taskchain.BukkitTaskChainFactory;
 import co.aikar.taskchain.TaskChainFactory;
-import com.google.common.collect.Lists;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import net.kyori.adventure.text.Component;
@@ -12,8 +11,6 @@ import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -21,7 +18,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.server.ServerCommandEvent;
-import xianxian.mc.starocean.gui.GUIManager;
+import org.staroceanmc.bukkit.gui.GUIManager;
+import org.staroceanmc.bukkit.utils.BukkitVersionMatcher;
+import org.staroceanmc.bukkit.utils.ServerVersionMatcher;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,8 +36,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class StarOcean extends AbstractPlugin {
     @Deprecated
@@ -102,7 +99,7 @@ public class StarOcean extends AbstractPlugin {
         }
 
         StarOceanModule staroceanModule = new StarOceanModule(this);
-        this.moduleManager.addModule("xianxian.mc.starocean.StarOcean$StarOceanModule", staroceanModule);
+        this.moduleManager.addModule("org.staroceanmc.bukkit.StarOcean$StarOceanModule", staroceanModule);
         staroceanModule.setMessager(new DefaultMessager(this, staroceanModule));
 
         discoverModules();
@@ -188,7 +185,7 @@ public class StarOcean extends AbstractPlugin {
                 } catch (ClassCastException e) {
                     e.printStackTrace();
                     logger().severe("Module " + moduleName
-                            + " isn't a sub class of xianxian.mc.starocean.Module, spelling mistake or hacking?");
+                            + " isn't a sub class of org.staroceanmc.bukkit.Module, spelling mistake or hacking?");
                 } catch (InstantiationException e) {
                     e.printStackTrace();
                     logger().severe("Unable to create instance of Module " + moduleName + ", isn't a valid class?");
