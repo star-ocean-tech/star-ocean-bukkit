@@ -21,7 +21,6 @@ public class GUIManager implements Listener {
     private final AbstractPlugin plugin;
     private final Map<Player, GUIStack> guiStacks = new HashMap<>();
     private final Logger logger;
-    private final GuiActionListener listener = new GuiActionListener(this);
 
     
     public GUIManager(AbstractPlugin plugin) {
@@ -31,7 +30,6 @@ public class GUIManager implements Listener {
     
     public void prepare() {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
-        plugin.getServer().getPluginManager().registerEvents(listener, plugin);
     }
 
     public void closeAll(Player player) {
@@ -62,7 +60,7 @@ public class GUIManager implements Listener {
     
     /**
      * Open a GUI for a player<br>
-     * NOTE: Please don't call this as soon as a player join the server<br>
+     * NOTE: Please don't call this when a player just join the server<br>
      * @param gui The GUI to display
      */
     public void open(GUI gui) {

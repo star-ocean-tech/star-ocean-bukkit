@@ -1,5 +1,7 @@
 package org.staroceanmc.bukkit.gui;
 
+import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
@@ -8,54 +10,167 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Wrapper of inventories to implement a simple GUI.
+ * Provides utility methods intended for chained call.
  * @param <T> Must be subclasses themselves.
  */
-public abstract class Gui<T extends Gui<T, Inv>, Inv extends Inventory> implements InventoryHolder {
+public abstract class Gui<T extends Gui<T, Inv, Holder>,
+        Inv extends Inventory,
+        Holder>
+        implements InventoryHolder {
     protected List<Slot> slots;
-    protected EventListener eventListener;
-    private Inventory inventory;
+    protected EventListener<T, Inv, Holder> eventListener;
+    private Inv inventory;
+    private WeakReference<Holder> holder;
+    private Component title;
+    private final AtomicBoolean destroyed = new AtomicBoolean();
+    private final AtomicBoolean created = new AtomicBoolean();
 
     public Gui() {
-        this.slots = createSlots();
+
+    }
+
+
+    /**
+     * Called before {@link Gui#create()} to specify a title for this Gui
+     */
+    public T title(Component title) {
+        this.title = title;
+        return (T) this;
     }
 
     /**
      * Actually creates related objects and underlying inventory.
-     * This must be invoked first before any other actions.
+     * This must be invoked first before any other actions involves inventory content alternation.
+     * The process of creation can be executed async.
      */
-    public abstract T create();
-    public abstract void display();
+    public T create() {
+        if (created.get()) {
+            throw new IllegalStateException("create called on an created Gui");
+        }
+        created.set(true);
+
+        return create0();
+    }
+
+    protected abstract T create0();
+
+    public void destroy() {
+        if (destroyed.get()) {
+            throw new IllegalStateException("destroy called on an destroyed Gui");
+        }
+        destroyed.set(true);
+
+        if (eventListener != null) {
+            eventListener.onDestroy(this);
+        }
+    }
+
+    public void close() {
+
+    }
+    
+    public void pause() {
+        
+    }
+    
+    public void resume() {
+        
+    }
+
+    /**
+     * Directly opens the Gui without adding it to display stack.
+     * See also: {@link GuiManager#display(Player, Gui)}
+     */
+    public void displayDirectly(Player player) {
+        if (inventory == null) {
+            throw new IllegalStateException("display called before this Gui gets created");
+        }
+
+        if (eventListener != null) {
+            eventListener.onDisplay(this);
+        }
+
+        player.openInventory(getInventory());
+    }
+
 
     public T pos(int index, ItemStack stack) {
         return pos(index, stack, null);
     }
 
-    public abstract T pos(int index, ItemStack stack, @Nullable OnClick onClick);
-
-    protected void setSlot(int index, ItemStack item) {
-
+    public T pos(int index, ItemStack stack, @Nullable OnClick onClick) {
+        setSlot(index, stack, onClick);
+        return (T) this;
     }
 
-    public T listener(EventListener listener) {
+    public T holder(Holder holder) {
+        this.holder = new WeakReference<>(holder);
+        return (T) this;
+    }
+
+    @Nullable
+    public Holder getHolder() {
+        return holder == null ? null : holder.get();
+    }
+
+    protected void setSlot(int index, ItemStack item, @Nullable OnClick onClick) {
+        if (inventory == null) {
+            throw new IllegalStateException("setSlot called before this Gui gets created");
+        }
+
+        if (index >= inventory.getSize()) {
+            throw new IndexOutOfBoundsException(index);
+        }
+
+        inventory.setItem(index, item);
+
+        Slot slot = slots.get(index);
+
+        slot.item = item;
+        slot.onClick = onClick;
+    }
+
+    protected void createSlots() {
+        this.slots = new ArrayList<>(inventory.getSize());
+        for (int i = 0; i < inventory.getSize(); i++) {
+            slots.add(new Slot());
+        }
+    }
+
+    public T listener(EventListener<T, Inv, Holder> listener) {
         this.eventListener = listener;
         return (T) this;
     }
 
     @NotNull
-    protected abstract List<Slot> createSlots();
+    protected Slot getSlot(int index) {
+        return slots.get(index);
+    }
+
+    @Nullable
+    protected Component getTitle() {
+        return title;
+    }
 
     @NotNull
     @Override
-    public Inventory getInventory() {
+    public Inv getInventory() {
         if (inventory == null) {
-            throw new IllegalStateException("getInventory called before creating");
+            throw new IllegalStateException("getInventory called before this Gui gets created");
         }
 
         return inventory;
+    }
+
+    protected void setInventory(@NotNull Inv inventory) {
+        this.inventory = inventory;
     }
 
     protected class Slot {
@@ -83,7 +198,7 @@ public abstract class Gui<T extends Gui<T, Inv>, Inv extends Inventory> implemen
     /**
      * A default GUI implementation using vanilla chest inventory.
      */
-    public static class Default extends Gui<Default, Inventory> {
+    public static class Default<Holder> extends Gui<Default<Holder>, Inventory, Holder> {
         private final int row;
 
         public Default(int row) {
@@ -91,39 +206,53 @@ public abstract class Gui<T extends Gui<T, Inv>, Inv extends Inventory> implemen
         }
 
         @Override
-        public Default create() {
+        public Default<Holder> create0() {
+            if (getTitle() != null) {
+                setInventory(Bukkit.createInventory(this, row * 9, getTitle()));
+            } else {
+                setInventory(Bukkit.createInventory(this, row * 9));
+            }
 
-            return null;
-        }
-
-        @Override
-        public void display() {
-
-        }
-
-        @Override
-        public Default pos(int index, ItemStack stack, @Nullable OnClick onClick) {
-            return null;
-        }
-
-        @Override
-        protected @NotNull List<Gui<Default, Inventory>.Slot> createSlots() {
-            return null;
-        }
-
-        public Default pos(int x, int y, ItemStack stack) {
-            return null;
-        }
-
-        public Default pos(int x, int y, ItemStack stack, OnClick onClick) {
-            return null;
-        }
-
-        public Default divideLineVertical(int x) {
+            createSlots();
             return this;
         }
 
-        public Default divideLineHorizontal(int x) {
+        public Default<Holder> pos(int x, int y, ItemStack stack) {
+            return null;
+        }
+
+        /**
+         * Changes the item at specified position.
+         *
+         * @param x Starts 0
+         * @param y Starts 0
+         * @param stack The item to display
+         * @param onClick Called when the slot is clicked
+         * @return
+         */
+        public Default<Holder> pos(int x, int y, ItemStack stack, OnClick onClick) {
+            return null;
+        }
+
+        /**
+         * Vertically raw a divide line with an item.
+         *
+         * @param x Starts 0
+         * @param item The item to display
+         * @return
+         */
+        public Default<Holder> divideLineVertical(int x, ItemStack item) {
+            return this;
+        }
+
+        /**
+         * Horizontally raw a divide line with an item.
+         *
+         * @param y Starts 0
+         * @param item The item to display
+         * @return
+         */
+        public Default<Holder> divideLineHorizontal(int y, ItemStack item) {
             return this;
         }
     }
@@ -141,12 +270,26 @@ public abstract class Gui<T extends Gui<T, Inv>, Inv extends Inventory> implemen
         boolean onClick(Player player, ClickType type);
     }
 
-    public interface EventListener {
+    public interface EventListener<T extends Gui<T, Inv, Holder>, Inv extends Inventory, Holder> {
 
-        void onDisplay();
+        /**
+         * Called just before a Gui is shown to player for the first time.
+         */
+        void onDisplay(Gui<T, Inv, Holder> gui);
 
-        void onPause();
+        /**
+         * Called when a Gui resumes from background and reopens to player.
+         */
+        void onResume(Gui<T, Inv, Holder> gui);
 
-        void onDestroy();
+        /**
+         * Called when a Gui is hide but not closed and can be resumed later, e.g. a new Gui opened.
+         */
+        void onPause(Gui<T, Inv, Holder> gui);
+
+        /**
+         * Called when
+         */
+        void onDestroy(Gui<T, Inv, Holder> gui);
     }
 }
