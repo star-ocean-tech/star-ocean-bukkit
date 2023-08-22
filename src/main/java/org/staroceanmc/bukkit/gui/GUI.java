@@ -9,11 +9,12 @@ import org.bukkit.inventory.InventoryHolder;
 import org.staroceanmc.bukkit.Module;
 import org.staroceanmc.bukkit.gui.view.View;
 
+@Deprecated
 public abstract class GUI implements InventoryHolder {
     private final Module module;
     private final Player player;
     private boolean destroyed;
-    private Table<Integer, Integer, View> views = HashBasedTable.create();
+    private final Table<Integer, Integer, View> views = HashBasedTable.create();
     private boolean created = false;
     
     public GUI(Module module, Player player) {

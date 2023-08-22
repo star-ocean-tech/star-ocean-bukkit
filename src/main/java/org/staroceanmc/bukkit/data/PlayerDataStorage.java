@@ -1,4 +1,8 @@
 package org.staroceanmc.bukkit.data;
 
-public interface PlayerDataStorage {
+import org.bukkit.persistence.PersistentDataContainer;
+
+public interface PlayerDataStorage extends PersistentDataContainer {
+
+
 }

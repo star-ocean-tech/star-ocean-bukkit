@@ -19,6 +19,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.server.ServerCommandEvent;
 import org.staroceanmc.bukkit.gui.GUIManager;
+import org.staroceanmc.bukkit.gui.GuiManager;
 import org.staroceanmc.bukkit.utils.BukkitVersionMatcher;
 import org.staroceanmc.bukkit.utils.ServerVersionMatcher;
 
@@ -53,7 +54,8 @@ public class StarOcean extends AbstractPlugin {
     private BukkitCommandManager commandManager;
     private DatabaseManager databaseManager = new DatabaseManager(this);
     private ServerVersionMatcher versionMatcher = new BukkitVersionMatcher();
-    private GUIManager guiManager = new GUIManager(this);
+    private GUIManager _guiManager = new GUIManager(this);
+    private GuiManager guiManager = new GuiManager(this);
     private TaskChainFactory taskChainFactory;
     
     private File messagerFile;
@@ -64,6 +66,8 @@ public class StarOcean extends AbstractPlugin {
     public void onLoad() {
         super.onLoad();
         logger = getLogger();
+
+        this.versionMatcher.match();
 
         File addonsFile = new File(getDataFolder(), "addons");
         if (!addonsFile.exists())
@@ -113,12 +117,12 @@ public class StarOcean extends AbstractPlugin {
         this.taskChainFactory = BukkitTaskChainFactory.create(this);
         commandManager = new PaperCommandManager(this);
         commandManager.enableUnstableAPI("help");
+        commandManager.getCommandContexts().registerIssuerOnlyContext(AbstractPlugin.class, (s)->this);
         //commandManager.setFormat(MessageType.INFO, new BukkitMessageFormatter());
         INSTANCE = this;
         
+        _guiManager.prepare();
         guiManager.prepare();
-
-        this.versionMatcher.match();
 
         moduleManager.prepare();
 
@@ -339,11 +343,16 @@ public class StarOcean extends AbstractPlugin {
 
     @Override
     public GUIManager getGUIManager() {
-        return guiManager;
+        return _guiManager;
     }
 
     @Override
     public TaskChainFactory getTaskChainFactory() {
         return taskChainFactory;
+    }
+
+    @Override
+    public GuiManager getGuiManager() {
+        return guiManager;
     }
 }

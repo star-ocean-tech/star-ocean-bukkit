@@ -1,44 +1,67 @@
 package org.staroceanmc.bukkit.gui;
 
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.staroceanmc.bukkit.gui.impl.DefaultGui;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Logger;
 
 /**
  * Wrapper of inventories to implement a simple GUI.
  * Provides utility methods intended for chained call.
+ * <p>
+ * Multiple viewer support: A Gui can be opened to multiple players.
+ * When there is no viewers, this Gui will pause.
+ * When there is no owners, this Gui will be destroyed.
+ * </p>
+ * See {@link DefaultGui} for examples.
  * @param <T> Must be subclasses themselves.
  */
 public abstract class Gui<T extends Gui<T, Inv, Holder>,
         Inv extends Inventory,
         Holder>
         implements InventoryHolder {
+
+    public static final int FLAG_NO_HISTORY_STACK = 1;
+    public static final int FLAG_PERSISTENT = 1 << 1;
+
+    private static final Logger LOGGER = Logger.getLogger("StarOcean-Gui");
+
+    private final AtomicBoolean destroyed = new AtomicBoolean();
+    private final AtomicBoolean created = new AtomicBoolean();
+    private final Set<Player> owners = new HashSet<>();
+    private final Set<Player> viewers = new HashSet<>();
+    private final GuiManager manager;
+
     protected List<Slot> slots;
     protected EventListener<T, Inv, Holder> eventListener;
     private Inv inventory;
     private WeakReference<Holder> holder;
     private Component title;
-    private final AtomicBoolean destroyed = new AtomicBoolean();
-    private final AtomicBoolean created = new AtomicBoolean();
+    private int flags;
 
-    public Gui() {
+    // TODO: May associate with multiple players
 
+    public Gui(GuiManager manager) {
+        this.manager = manager;
     }
 
-
     /**
-     * Called before {@link Gui#create()} to specify a title for this Gui
+     * Called before {@link Gui#create()} to specify a title for this Gui.
      */
     public T title(Component title) {
         this.title = title;
@@ -59,7 +82,20 @@ public abstract class Gui<T extends Gui<T, Inv, Holder>,
         return create0();
     }
 
+    public int getFlags() {
+        return flags;
+    }
+
+    public T flags(int flags) {
+        this.flags = flags;
+        return (T) this;
+    }
+
     protected abstract T create0();
+
+    public void display(Player player) {
+        displayDirectly(player);
+    }
 
     public void destroy() {
         if (destroyed.get()) {
@@ -68,38 +104,93 @@ public abstract class Gui<T extends Gui<T, Inv, Holder>,
         destroyed.set(true);
 
         if (eventListener != null) {
-            eventListener.onDestroy(this);
+            try {
+                eventListener.onDestroy(this);
+            } catch (Throwable e) {
+                LOGGER.severe("Error occurred while processing event");
+                e.printStackTrace();
+            }
         }
     }
 
-    public void close() {
+    public void close(Player player) {
+        player.closeInventory(InventoryCloseEvent.Reason.PLAYER);
+    }
 
+    /*
+    public void resume(Player player) {
+        if (owners.contains(player)) {
+            displayDirectly(player);
+        }
     }
-    
-    public void pause() {
-        
-    }
-    
-    public void resume() {
-        
-    }
+
+     */
 
     /**
-     * Directly opens the Gui without adding it to display stack.
-     * See also: {@link GuiManager#display(Player, Gui)}
+     * Called when a player closes a Gui.
      */
-    public void displayDirectly(Player player) {
+    public void onClose(Player player) {
+        viewers.remove(player);
+        owners.remove(player);
+
+        if (eventListener != null) {
+            try {
+                eventListener.onClose(this, player);
+            } catch (Throwable e) {
+                LOGGER.severe("Error occurred while processing event");
+                e.printStackTrace();
+            }
+        }
+
+        if (this.owners.isEmpty() && (flags & FLAG_PERSISTENT) == 0) {
+            destroy();
+        }
+    }
+
+    /*
+    void onPause(Player player) {
+        viewers.remove(player);
+
+        if (eventListener != null) {
+            try {
+                eventListener.onPause(this, player);
+            } catch (Throwable e) {
+                LOGGER.severe("Error occurred while processing event");
+                e.printStackTrace();
+            }
+        }
+    }
+     */
+
+    public boolean click(Player player, int index, ClickType clickType) {
+        return getSlot(index).click(player, clickType);
+    }
+
+    void displayDirectly(Player player) {
         if (inventory == null) {
             throw new IllegalStateException("display called before this Gui gets created");
         }
 
-        if (eventListener != null) {
-            eventListener.onDisplay(this);
+        if (!owners.contains(player)) {
+            owners.add(player);
         }
 
         player.openInventory(getInventory());
     }
 
+
+    public void onDisplay(Player player) {
+        viewers.add(player);
+
+        if (eventListener != null) {
+            try {
+                eventListener.onDisplay(this, player);
+            } catch (Throwable e) {
+                LOGGER.severe("Error occurred while processing event");
+                e.printStackTrace();
+            }
+        }
+    }
 
     public T pos(int index, ItemStack stack) {
         return pos(index, stack, null);
@@ -159,6 +250,11 @@ public abstract class Gui<T extends Gui<T, Inv, Holder>,
         return title;
     }
 
+    /**
+     * Gets the underlying inventory associated with this Gui.
+     * Displaying should go through GuiManager or issues can occur.
+     * @return The inventory created by this Gui.
+     */
     @NotNull
     @Override
     public Inv getInventory() {
@@ -171,6 +267,20 @@ public abstract class Gui<T extends Gui<T, Inv, Holder>,
 
     protected void setInventory(@NotNull Inv inventory) {
         this.inventory = inventory;
+    }
+
+    /**
+     * @return Players who owned this Gui (but not necessarily watching it).
+     */
+    public Set<Player> getOwners() {
+        return owners;
+    }
+
+    /**
+     * @return Players who are looking at this Gui.
+     */
+    public Set<Player> getViewers() {
+        return viewers;
     }
 
     protected class Slot {
@@ -195,70 +305,38 @@ public abstract class Gui<T extends Gui<T, Inv, Holder>,
         }
     }
 
-    /**
-     * A default GUI implementation using vanilla chest inventory.
-     */
-    public static class Default<Holder> extends Gui<Default<Holder>, Inventory, Holder> {
-        private final int row;
+    public static class MultiPagedDefault<Holder> extends DefaultGui<Holder> {
+        private final List<PagePane> pages = new ArrayList<>();
+        private final List<Slot> allSlots = new ArrayList<>();
 
-        public Default(int row) {
-            this.row = row;
+        public MultiPagedDefault(GuiManager manager, int row) {
+            super(manager, row);
         }
 
-        @Override
-        public Default<Holder> create0() {
-            if (getTitle() != null) {
-                setInventory(Bukkit.createInventory(this, row * 9, getTitle()));
-            } else {
-                setInventory(Bukkit.createInventory(this, row * 9));
-            }
-
-            createSlots();
-            return this;
-        }
-
-        public Default<Holder> pos(int x, int y, ItemStack stack) {
+        public PagePane addMultiPageArea(int fromX, int fromY, int toX, int toY) {
             return null;
         }
 
-        /**
-         * Changes the item at specified position.
-         *
-         * @param x Starts 0
-         * @param y Starts 0
-         * @param stack The item to display
-         * @param onClick Called when the slot is clicked
-         * @return
-         */
-        public Default<Holder> pos(int x, int y, ItemStack stack, OnClick onClick) {
-            return null;
-        }
-
-        /**
-         * Vertically raw a divide line with an item.
-         *
-         * @param x Starts 0
-         * @param item The item to display
-         * @return
-         */
-        public Default<Holder> divideLineVertical(int x, ItemStack item) {
+        public MultiPagedDefault<Holder> addItem() {
             return this;
         }
 
-        /**
-         * Horizontally raw a divide line with an item.
-         *
-         * @param y Starts 0
-         * @param item The item to display
-         * @return
-         */
-        public Default<Holder> divideLineHorizontal(int y, ItemStack item) {
-            return this;
+        public class PagePane {
+
         }
     }
 
-    public static class Anvil {
+    public static class Anvil<Holder> extends Gui<Anvil<Holder>, AnvilInventory, Holder> {
 
+        public Anvil(GuiManager manager) {
+            super(manager);
+        }
+
+        @Override
+        protected Anvil<Holder> create0() {
+
+            return null;
+        }
     }
 
     public interface OnClick {
@@ -273,22 +351,19 @@ public abstract class Gui<T extends Gui<T, Inv, Holder>,
     public interface EventListener<T extends Gui<T, Inv, Holder>, Inv extends Inventory, Holder> {
 
         /**
-         * Called just before a Gui is shown to player for the first time.
+         * Called before a Gui is shown to player.
          */
-        void onDisplay(Gui<T, Inv, Holder> gui);
+        void onDisplay(Gui<T, Inv, Holder> gui, Player player);
 
         /**
-         * Called when a Gui resumes from background and reopens to player.
+         * Called when a Gui is placed in background but not closed and can be resumed later, e.g. when a new Gui opened by this Gui.
          */
-        void onResume(Gui<T, Inv, Holder> gui);
+        //void onPause(Gui<T, Inv, Holder> gui, Player player);
+
+        void onClose(Gui<T, Inv, Holder> gui, Player player);
 
         /**
-         * Called when a Gui is hide but not closed and can be resumed later, e.g. a new Gui opened.
-         */
-        void onPause(Gui<T, Inv, Holder> gui);
-
-        /**
-         * Called when
+         * Called when a Gui has no viewer and should be destroyed.
          */
         void onDestroy(Gui<T, Inv, Holder> gui);
     }

@@ -17,6 +17,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.logging.Logger;
 
+@Deprecated
 public class GUIManager implements Listener {
     private final AbstractPlugin plugin;
     private final Map<Player, GUIStack> guiStacks = new HashMap<>();
