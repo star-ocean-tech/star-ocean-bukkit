@@ -1,6 +1,7 @@
 package org.staroceanmc.bukkit.gui;
 
 import net.kyori.adventure.text.Component;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -40,6 +41,7 @@ public abstract class Gui<T extends Gui<T, Inv, Holder>,
     public static final int FLAG_PERSISTENT = 1 << 1;
 
     private static final Logger LOGGER = Logger.getLogger("StarOcean-Gui");
+    private static final ItemStack AIR = new ItemStack(Material.AIR);
 
     private final AtomicBoolean destroyed = new AtomicBoolean();
     private final AtomicBoolean created = new AtomicBoolean();
@@ -211,7 +213,7 @@ public abstract class Gui<T extends Gui<T, Inv, Holder>,
         return holder == null ? null : holder.get();
     }
 
-    protected void setSlot(int index, ItemStack item, @Nullable OnClick onClick) {
+    protected void setSlot(int index, @Nullable ItemStack item, @Nullable OnClick onClick) {
         if (inventory == null) {
             throw new IllegalStateException("setSlot called before this Gui gets created");
         }
@@ -220,7 +222,7 @@ public abstract class Gui<T extends Gui<T, Inv, Holder>,
             throw new IndexOutOfBoundsException(index);
         }
 
-        inventory.setItem(index, item);
+        inventory.setItem(index, item == null ? AIR : item);
 
         Slot slot = slots.get(index);
 

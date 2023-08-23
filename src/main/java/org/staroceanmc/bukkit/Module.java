@@ -133,6 +133,19 @@ public abstract class Module {
 
     public FileConfiguration loadConfig(String configFileName) {
         File configFile = new File(getDataFolder(true), configFileName);
+
+        if (!configFile.exists()) {
+            try {
+                configFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            FileConfiguration config = new YamlConfiguration();
+            config.options().copyDefaults(true);
+            return config;
+        }
+
         FileConfiguration config = YamlConfiguration.loadConfiguration(configFile);
         config.options().copyDefaults(true);
         return config;

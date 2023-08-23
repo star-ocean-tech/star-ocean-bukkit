@@ -23,7 +23,7 @@ public class GuiActionListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onInventoryClick(InventoryClickEvent event) {
-        if (event.getInventory().getHolder() instanceof Gui<?,?,?> gui && event.getView().getPlayer() instanceof Player player) {
+        if (event.getClickedInventory() != null && event.getClickedInventory().getHolder() instanceof Gui<?,?,?> gui && event.getView().getPlayer() instanceof Player player) {
             event.setCancelled(!gui.click(player, event.getSlot(), event.getClick()));
         }
     }

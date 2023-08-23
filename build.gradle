@@ -19,6 +19,7 @@ repositories {
     maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots' } //spigot offical repository 
     maven { url 'https://hub.spigotmc.org/nexus/content/repositories/sonatype-nexus-snapshots/' }
     maven { url 'https://repo.aikar.co/content/groups/aikar/' }
+    maven { url 'https://repo.codemc.org/repository/maven-public' }
 }
 
 dependencies {
@@ -32,18 +33,20 @@ dependencies {
     implementation group: 'com.zaxxer', name: 'HikariCP', version: '3.4.1'
     implementation group: 'co.aikar', name: 'taskchain-bukkit', version: '3.7.2'
     implementation group: 'co.aikar', name: 'acf-paper', version: '0.5.0-SNAPSHOT'
+    implementation group: 'de.tr7zw', name: 'item-nbt-api', version: '2.11.3'
 }
 
 shadowJar {
     archiveClassifier.set("dist")
 
-    relocate 'io.netty', 'xianxian.mc.starocean.libs.netty'
-    relocate 'com.google.protobuf', 'xianxian.mc.starocean.libs.protobuf'
-    relocate 'org.sqlite', 'xianxian.mc.starocean.libs.sqlite'
-    relocate 'google', 'xianxian.mc.starocean.libs.protobuf.google'
-    relocate 'com.mysql', 'xianxian.mc.starocean.libs.mysql'
-    relocate 'com.zaxxer.hikari', 'xianxian.mc.starocean.libs.hikari'
-    relocate 'org.slf4j', 'xianxian.mc.starocean.libs.slf4j'
+    relocate 'io.netty', 'org.staroceanmc.bukkit.libs.netty'
+    relocate 'com.google.protobuf', 'org.staroceanmc.bukkit.libs.protobuf'
+    relocate 'org.sqlite', 'org.staroceanmc.bukkit.libs.sqlite'
+    relocate 'google', 'org.staroceanmc.bukkit.libs.protobuf.google'
+    relocate 'com.mysql', 'org.staroceanmc.bukkit.libs.mysql'
+    relocate 'com.zaxxer.hikari', 'org.staroceanmc.bukkit.libs.hikari'
+    relocate 'org.slf4j', 'org.staroceanmc.bukkit.libs.slf4j'
+    relocate 'de.tr7zw.changeme.nbtapi', 'org.staroceanmc.bukkit.libs.nbtapi'
 }
 
 tasks.withType(JavaCompile) {
