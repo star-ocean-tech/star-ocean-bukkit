@@ -65,6 +65,10 @@ public class StarOcean extends AbstractPlugin {
     @Override
     public void onLoad() {
         super.onLoad();
+
+        FileConfiguration configuration = getConfig();
+        configuration.get("player-data-storage");
+
         logger = getLogger();
 
         this.versionMatcher.match();

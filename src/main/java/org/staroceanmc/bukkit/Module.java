@@ -16,10 +16,11 @@ public abstract class Module {
     private FileConfiguration config;
     private final Logger logger;
     private String name;
-    private String identifiedName;
+    private final String identifiedName;
     private ModuleState state;
     private String description = "";
     private MessageManager messager;
+    private String moduleId;
 
     public Module(AbstractPlugin plugin) {
         this.plugin = plugin;

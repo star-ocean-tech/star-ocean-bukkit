@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 public class PlayerDataAdapterContext implements PersistentDataAdapterContext {
 
     @Override
-    public @NotNull PersistentDataContainer newPersistentDataContainer() {
+    public @NotNull PlayerDataContainer newPersistentDataContainer() {
         return null;
     }
 }

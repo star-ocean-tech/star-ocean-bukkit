@@ -8,7 +8,12 @@ import java.util.UUID;
 
 public class PlayerDataManager {
 
-    private Map<UUID, PlayerData> trackedPlayerData = new HashMap<>();
+    private final Map<UUID, PlayerDataStorage> trackedPlayerData = new HashMap<>();
+    private final PlayerDataRootStorage rootStorage;
+
+    public PlayerDataManager(PlayerDataRootStorage rootStorage) {
+        this.rootStorage = rootStorage;
+    }
 
     /**
      * NOTE: this method involves blocking IO.
